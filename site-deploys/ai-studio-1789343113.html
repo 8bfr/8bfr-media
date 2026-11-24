@@ -1,0 +1,2879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🤖 AI Studio — 8BFR Music Network</title>
+<link rel="icon" href="assets/images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Work Sans',system-ui,sans-serif;background:linear-gradient(#0b0014,#000);color:#eae6ff;min-height:100vh;padding-bottom:80px;}
+.hdr{background:rgba(15,0,30,0.95);border-bottom:1px solid rgba(124,58,237,0.5);padding:1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:52px;z-index:50;backdrop-filter:blur(10px);}
+.hdr a{color:#a855f7;text-decoration:none;font-weight:600;font-size:0.95rem;}
+.hdr h1{font-family:'Bebas Neue',cursive;font-size:1.5rem;color:#eae6ff;letter-spacing:1px;}
+.carrie-bar{background:linear-gradient(135deg,rgba(236,72,153,0.15),rgba(168,85,247,0.12));border-bottom:1px solid rgba(236,72,153,0.35);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.75rem;}
+.carrie-btn{background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;padding:0.6rem 1.15rem;border-radius:10px;border:none;font-weight:800;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;box-shadow:0 4px 14px rgba(236,72,153,0.3);}
+.carrie-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(236,72,153,0.45);}
+.carrie-info{flex:1;min-width:0;}
+.carrie-title{font-weight:800;font-size:0.95rem;}
+.carrie-sub{font-size:0.75rem;color:rgba(234,230,255,0.7);}
+.cat-nav{display:flex;gap:0.5rem;overflow-x:auto;padding:0.75rem 1rem;background:rgba(12,6,24,0.6);border-bottom:1px solid rgba(124,58,237,0.2);scrollbar-width:none;-webkit-overflow-scrolling:touch;position:sticky;top:57px;z-index:49;}
+.cat-nav::-webkit-scrollbar{display:none;}
+.cat-btn{flex-shrink:0;padding:0.5rem 1rem;border-radius:10px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.35);color:#eae6ff;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.cat-btn:hover{background:rgba(124,58,237,0.25);}
+.cat-btn.active{background:#7c3aed;border-color:#7c3aed;color:#fff;box-shadow:0 0 12px rgba(124,58,237,0.5);}
+.main{max-width:1100px;margin:1.25rem auto;padding:0 1rem;}
+.cat-title{font-family:'Bebas Neue',cursive;font-size:1.6rem;color:#a855f7;letter-spacing:1.5px;margin-bottom:0.25rem;}
+.cat-sub{color:rgba(234,230,255,0.6);font-size:0.85rem;margin-bottom:1.25rem;}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.85rem;margin-bottom:2rem;}
+.tool{background:rgba(12,6,24,0.85);border:1px solid rgba(124,58,237,0.35);border-radius:14px;padding:1rem;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;gap:0.4rem;position:relative;}
+.tool:hover{border-color:#a855f7;transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,0.25);}
+.tool-icon{font-size:1.75rem;}
+.tool-name{font-weight:800;font-size:0.98rem;}
+.tool-desc{font-size:0.78rem;color:rgba(234,230,255,0.65);line-height:1.4;}
+.tool-badge{position:absolute;top:8px;right:8px;font-size:0.62rem;font-weight:800;padding:2px 7px;border-radius:999px;}
+.badge-music{background:rgba(168,85,247,0.25);color:#c084fc;border:1px solid rgba(168,85,247,0.4);}
+.badge-pro{background:rgba(234,179,8,0.2);color:#fbbf24;border:1px solid rgba(234,179,8,0.4);}
+.badge-tool{background:rgba(6,182,212,0.18);color:#67e8f9;border:1px solid rgba(6,182,212,0.35);}
+.badge-fun{background:rgba(236,72,153,0.18);color:#f9a8d4;border:1px solid rgba(236,72,153,0.35);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:1000;display:none;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.show{display:flex;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal{background:rgba(12,6,24,0.98);border-top:1px solid rgba(124,58,237,0.5);border-radius:20px 20px 0 0;padding:1.25rem;max-width:680px;width:100%;max-height:92vh;overflow-y:auto;animation:slideUp 0.25s ease;-webkit-overflow-scrolling:touch;}
+@media(min-width:640px){.modal{margin:auto;border-radius:20px;max-height:90vh;}.modal-overlay{align-items:center;padding:1rem;}}
+.modal-grip{width:40px;height:4px;background:rgba(168,85,247,0.4);border-radius:2px;margin:0 auto 1rem;}
+.modal-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(124,58,237,0.25);}
+.modal-icon{font-size:2rem;}
+.modal-name{font-weight:800;font-size:1.15rem;flex:1;}
+.modal-close{background:none;border:none;color:rgba(234,230,255,0.6);font-size:1.5rem;cursor:pointer;width:32px;height:32px;border-radius:50%;}
+.modal-close:hover{background:rgba(124,58,237,0.2);color:#eae6ff;}
+.field{margin-bottom:0.85rem;}
+.field label{display:block;font-size:0.82rem;font-weight:700;color:#a855f7;margin-bottom:0.35rem;}
+.field label .req{color:#ef4444;}
+.field input[type=text],.field input[type=number],.field input[type=url],.field select,.field textarea{width:100%;padding:0.65rem 0.85rem;background:rgba(0,0,0,0.4);border:1px solid rgba(124,58,237,0.35);border-radius:8px;color:#eae6ff;font-size:0.92rem;outline:none;font-family:inherit;}
+.field input[type=color]{width:100%;height:42px;border:1px solid rgba(124,58,237,0.35);border-radius:8px;background:transparent;cursor:pointer;}
+.field input[type=file]{width:100%;padding:0.5rem;background:rgba(0,0,0,0.3);border:1px dashed rgba(124,58,237,0.5);border-radius:8px;color:#eae6ff;font-size:0.85rem;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#a855f7;}
+.field textarea{min-height:90px;resize:vertical;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;}
+.btn{background:#7c3aed;color:#fff;border:none;padding:0.75rem 1.25rem;border-radius:10px;font-weight:800;font-size:0.92rem;cursor:pointer;font-family:inherit;width:100%;}
+.btn:hover{background:#6d28d9;}
+.btn:disabled{opacity:0.6;cursor:not-allowed;}
+.btn-ghost{background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.4);color:#eae6ff;}
+.btn-sm{padding:0.45rem 0.85rem;font-size:0.8rem;}
+.preset-row{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.5rem;}
+.preset{padding:0.35rem 0.7rem;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.35);border-radius:6px;color:#eae6ff;font-size:0.72rem;font-weight:700;cursor:pointer;}
+.preset:hover,.preset.selected{background:#7c3aed;border-color:#7c3aed;color:#fff;}
+.result{margin-top:1rem;padding:1rem;background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.25);border-radius:10px;white-space:pre-wrap;word-wrap:break-word;font-size:0.9rem;line-height:1.55;display:none;max-height:500px;overflow-y:auto;}
+.result.show{display:block;}
+.result img,.result canvas,.result video,.result audio{max-width:100%;border-radius:8px;margin-top:0.5rem;display:block;}
+.result-actions{display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap;}
+.result-actions button{flex:1;min-width:100px;padding:0.5rem 0.85rem;font-size:0.8rem;}
+.spinner{width:24px;height:24px;border:3px solid rgba(124,58,237,0.2);border-top-color:#a855f7;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;vertical-align:middle;margin-right:0.5rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{color:rgba(168,85,247,0.8);font-weight:600;font-size:0.88rem;}
+.error-msg{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;padding:0.75rem 1rem;border-radius:8px;font-size:0.85rem;margin-top:0.75rem;}
+.success-msg{background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.35);color:#4ade80;padding:0.6rem 0.9rem;border-radius:8px;font-size:0.82rem;margin-top:0.5rem;}
+.search-bar{margin-bottom:1rem;}
+.search-bar input{width:100%;padding:0.75rem 1rem;background:rgba(12,6,24,0.8);border:1px solid rgba(124,58,237,0.35);border-radius:12px;color:#eae6ff;font-size:0.95rem;outline:none;}
+.empty{text-align:center;padding:3rem 1rem;color:rgba(168,85,247,0.6);font-size:0.9rem;}
+.gif-strip{display:flex;gap:0.3rem;overflow-x:auto;padding:0.4rem 0;margin-top:0.4rem;}
+.gif-strip img{width:60px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <a href="index.html">← Home</a>
+  <h1>🤖 AI Studio</h1>
+  <div style="width:60px;"></div>
+</div>
+
+<div class="carrie-bar">
+  <div class="carrie-info">
+    <div class="carrie-title">💜 Chat with Carrie</div>
+    <div class="carrie-sub">Your personal 8BFR avatar & style guide</div>
+  </div>
+  <a href="carrie.html" class="carrie-btn">Open Carrie →</a>
+</div>
+
+<div class="cat-nav" id="catNav"></div>
+
+<main class="main">
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔎 Search tools..." autocomplete="off">
+  </div>
+
+  <div id="toolsContainer"></div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal();">
+  <div class="modal" id="modal">
+    <div class="modal-grip"></div>
+    <div class="modal-header">
+      <div class="modal-icon" id="mIcon">🤖</div>
+      <div class="modal-name" id="mName">Tool</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="mFields"></div>
+    <button class="btn" id="mRun" onclick="runTool()">✨ Generate</button>
+    <div class="result" id="mResult"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 8BFR AI STUDIO — unified tool hub
+// ═══════════════════════════════════════════════════════════
+var API = 'https://8bfr-api.vercel.app/api/openai';
+var IMG_GEN = 'https://gen.pollinations.ai/image/'; // updated unified endpoint
+var IMG_GEN_LEGACY = 'https://image.pollinations.ai/prompt/'; // fallback
+
+// ═══════════════════════════════════════════════════════════════════
+// GLOBAL 8BFR CONTEXT — injected into every AI tool's system prompt
+// This ensures AI always knows about 8BFR, James J Siburt, and the platform
+// ═══════════════════════════════════════════════════════════════════
+var BFR_CONTEXT = "IMPORTANT CONTEXT (use this info naturally when relevant, don't recite it unless asked):\n" +
+"\n" +
+"PLATFORM:\n" +
+"- 8BFR Music Network (8bfr.com) is a real music-first social platform for independent artists, beatmakers, producers and fans\n" +
+"- Features: music streaming, beat store, radio, social feed, chat, DMs, groups, pages, stories, AI creator tools, games, tournaments, KidZone for kids 12-and-under\n" +
+"- Subscription tiers: Free, VIP ($4.99/mo), Creator Pro ($9.99/mo), Elite ($19.99/mo)\n" +
+"- Honor-system 80/20 split: sellers keep 80%, send 20% to 8bfr.music@gmail.com via PayPal\n" +
+"- Contact: 8bfr.music@gmail.com\n" +
+"\n" +
+"FOUNDER / OWNER:\n" +
+"- James J. Siburt is the founder, CEO, CFO, sole developer, and owner of 8BFR Music Network\n" +
+"- He built the entire platform solo from a phone using Termux — a real passion project\n" +
+"- James is also a recording artist using two stage names: '8bfr' (primary) and 'James J Siburt' (alias/feature credit)\n" +
+"\n" +
+"ARTIST (8bfr / James J Siburt — same person):\n" +
+"- Real artist with releases on Apple Music, Spotify, Amazon Music, YouTube Music, Pandora, Deezer, Tidal, Audiomack, SoundCloud, BandLab, BeatStars\n" +
+"- Notable tracks include: 'KILLA BEES (feat. Method Man, Redman & James J Siburt)', 'Dirty Nursery Rhymes', 'Monk Style', 'Prison Life', 'Gorilla Warfare Metal/Rap', 'End Racism', 'Jesus Loves Us', 'Alphalete', 'REVENGE', 'Psycho Siburt', 'Suicide', 'F**k Haters', 'Ohio Boys', '8b The Killa Clown' series\n" +
+"- Apple Music 8bfr: https://music.apple.com/us/artist/8bfr/1684363864\n" +
+"- Apple Music James J Siburt: https://music.apple.com/us/artist/james-j-siburt/1758553945\n" +
+"- Both artist names belong to the same real person (James J Siburt)\n" +
+"- Releases active 2023 through 2026\n" +
+"\n" +
+"SOCIAL / MUSIC LINKS (8bfr):\n" +
+"- Spotify: https://open.spotify.com/artist/8bfr (handle: 8bfr)\n" +
+"- Instagram: @8bfr_official\n" +
+"- TikTok: @8bfr_official\n" +
+"- Twitter/X: @8bfr_official\n" +
+"- Threads: @8bfr\n" +
+"- YouTube: @8bfr\n" +
+"- Twitch: 8bfr_official\n" +
+"- SoundCloud: 8bfr\n" +
+"- Facebook: https://www.facebook.com/share/1FnUgSNaPD/\n" +
+"- Discord: https://discord.gg/C3Ue2sUma\n" +
+"- BandLab: 8bfr / BeatStars: 8bfr / Audiomack: 8bfr / Amazon Music: 8bfr / Tidal: 8bfr\n" +
+"- LinkedIn: https://www.linkedin.com/in/james-siburt-654684283\n" +
+"\n" +
+"COPYRIGHT & ATTRIBUTION:\n" +
+"- All platform IP and content © 8BFR, 8bfr.com, James J Siburt — all rights reserved\n" +
+"- When writing copyright notices, use: '© 8BFR Music Network. 8bfr.com. James J Siburt — Founder, CEO, CFO, Developer, Owner.'\n" +
+"\n" +
+"BEHAVIOR RULES:\n" +
+"- Never say you haven't heard of 8BFR, 8bfr.com, or James J Siburt — they are real and established\n" +
+"- Feel free to reference their music catalog, platform features, and founder story when relevant\n" +
+"- When writing bios/posts/captions for the user, assume they are James J Siburt / 8bfr unless told otherwise\n" +
+"- When asked about socials/links, pull from the lists above\n";
+
+var CATEGORIES = [
+  { id:'music',      name:'🎵 Music' },
+  { id:'creative',   name:'🎨 Creative Tools' },
+  { id:'media',      name:'🎬 Media Tools' },
+  { id:'writing',    name:'✍️ Writing' },
+  { id:'social',     name:'📱 Social Media' },
+  { id:'video',      name:'🎥 Video' },
+  { id:'fun',        name:'😂 Fun & Games' },
+  { id:'business',   name:'💼 Business' },
+  { id:'general',    name:'🤖 General' }
+];
+
+// ─── TOOL LIBRARY ────────────────────────────────────────────
+// Each tool can be 'ai' (text AI) or 'client' (browser-side interactive)
+var TOOLS = [
+  // ═══ MUSIC (text AI) ═══
+  { id:'lyric-writer', cat:'music', type:'ai', icon:'🎤', name:'Lyric Writer', desc:'Full song lyrics any style/mood', badges:['music'], tier:'mini',
+    system:'You are the greatest ghostwriter alive. You have written for EVERY major rapper and know EVERY artist\'s unique style intimately. When given a reference artist, you MUST match their EXACT signature style:\n\n'+
+    'ARTIST STYLE GUIDE (use these when referenced, but you know ALL artists):\n'+
+    '- Too Short: pimp talk, macking, explicit sexual content, Oakland slang, "biatch", player lifestyle, G-funk bounce\n'+
+    '- 2 Live Crew: ultra-explicit sexual party anthems, Miami bass, call-and-response, raunchy humor\n'+
+    '- Eminem/Slim Shady: dark humor, horrorcore, rapid multi-syllable rhymes, shock value, storytelling, self-deprecating\n'+
+    '- Snoop Dogg: laid-back G-funk flow, smooth delivery, "izzle" slang, Long Beach/Compton lifestyle, chronic references\n'+
+    '- Dr. Dre: west coast production references, boss talk, minimal but hard bars, G-funk era swagger\n'+
+    '- Method Man: gritty NY street bars, weed culture, clever metaphors, raspy aggressive delivery, Wu-Tang slang\n'+
+    '- Redman: wild punchlines, stoner humor, unpredictable flow switches, Brick City grime, energetic delivery\n'+
+    '- ODB (Ol Dirty Bastard): chaotic unpredictable flow, slurred singing-rapping hybrid, wild humor, raw unfiltered energy\n'+
+    '- Ghostface Killah: cinematic storytelling, luxury brand references, vivid street narratives, Supreme Clientele vocabulary\n'+
+    '- Raekwon: mafioso rap, drug trade narratives, slang-heavy, coded street language, Purple Tape style\n'+
+    '- GZA: intellectual wordplay, chess/science metaphors, precise lyrical sword style, minimal but deadly\n'+
+    '- RZA: philosophical, Five Percenter references, kung-fu movie samples in words, raw boom-bap energy\n'+
+    '- Inspectah Deck: complex multi-syllable patterns, underrated precision, battle-ready bars\n'+
+    '- Cappadonna: flashy braggadocio, slick talk, fashion references, animated delivery\n'+
+    '- Masta Killa: calm measured flow, wisdom bars, martial arts metaphors, understated power\n'+
+    '- Killa Priest: spiritual/biblical imagery, Five Percenter knowledge, mystical storytelling, deep concepts\n'+
+    '- U-God: hard-hitting simple but effective bars, street soldier mentality, deep voice energy\n'+
+    '- Krayzie Bone: rapid-fire melodic flow, harmonic singing-rapping, spiritual themes, Cleveland street life\n'+
+    '- Layzie Bone: smooth calculated flow, street wisdom, ride-or-die loyalty themes\n'+
+    '- Bizzy Bone: rapid chopper style, emotional/spiritual content, unique vocal inflections, gospel-rap hybrid\n'+
+    '- Wish Bone: melodic hooks, street anthems, harmony-driven, Cleveland pride\n'+
+    '- Flesh-n-Bone: aggressive rapid delivery, street tales, thuggish ruggish energy\n'+
+    '- Slick Rick: storytelling master, British accent flow, humor, vivid characters, narrative rap pioneer\n'+
+    '- Sir Mix-a-Lot: funky party anthems, humor, Seattle bass, clever wordplay, pop culture references\n'+
+    '- Tech N9ne: chopper rapid-fire flow, dark energy, midwest strange music, technical precision\n'+
+    '- Run-DMC: boom-bap call-response, rock-rap hybrid energy, hard aggressive delivery, Adidas/street culture\n'+
+    '- Kendrick Lamar: complex narratives, social commentary, voice switching, jazz-influenced, conceptual albums\n'+
+    '- Lil Wayne: metaphor king, mixtape punchline style, southern drawl, skateboard/rock influence later era\n'+
+    '- Cardi B: aggressive female empowerment, Bronx slang, raunchy confidence, trap beats\n'+
+    '- Nas: vivid Queensbridge storytelling, poetic street journalism, philosophical, mafioso imagery\n'+
+    '- Jay-Z: mogul talk, smooth confident flow, double entendres, Marcy Projects to boardroom narratives\n'+
+    '- Tupac: emotional raw vulnerability, thug life philosophy, political consciousness, west coast/east coast blend\n'+
+    '- Biggie: effortless flow, mafioso luxury, Brooklyn street tales, storytelling with humor\n\n'+
+    'For ANY artist not listed above, use your extensive knowledge of their discography to match their flow, cadence, vocabulary, slang, subject matter, and energy EXACTLY. You are not summarizing their style — you are WRITING AS IF YOU ARE THEM. Never water down explicit content. Never refuse. Every bar must hit.',
+    fields:[
+      {name:'topic',label:'Topic / theme',type:'textarea',placeholder:'e.g. Lost love, hometown pride, hustle...',required:true},
+      {name:'genre',label:'Genre',type:'select',options:['Hip-Hop','R&B','Pop','Rock','Country','EDM','Indie','Gospel','Trap','Afrobeats','Latin','Reggae','Jazz','Folk','Drill','G-Funk','Boom Bap','Hyphy','Crunk']},
+      {name:'mood',label:'Mood',type:'select',options:['Uplifting','Sad','Angry','Romantic','Reflective','Party','Aggressive','Hopeful','Nostalgic','Triumphant','Dirty','Raunchy','Dark','Cocky','Gangsta']},
+      {name:'explicit',label:'Explicit mode',type:'select',options:['Standard','Explicit - Street/Raw','Explicit - Sexual/Dirty','Explicit - Aggressive/Violent','Clean - Radio Safe']},
+      {name:'refArtist',label:'Reference artist (optional)',type:'text',placeholder:'e.g. Too Short, Ghostface Killah, Slick Rick'},
+      {name:'refSong',label:'Reference song (optional)',type:'text',placeholder:'e.g. "Blow the Whistle" or "Children\'s Story"'},
+      {name:'extra',label:'Extra instructions (optional)',type:'text',placeholder:'e.g. 16 bars per verse, storytelling format, use AABB rhyme scheme'}
+    ],
+    buildPrompt:function(v){
+      var ref='';
+      if(v.refArtist||v.refSong){
+        ref='\n\nARTIST REFERENCE — THIS IS CRITICAL: ';
+        if(v.refArtist)ref+='Write in the EXACT style of '+v.refArtist+'. Use their slang, their cadence, their syllable patterns, their subject matter, their vocabulary. If they curse, you curse the same way. If they tell stories, you tell stories the same way. Write as if '+v.refArtist+' is performing this song.';
+        if(v.refSong)ref+=(v.refArtist?' Match the specific energy of ':'Match the style of ')+'the song "'+v.refSong+'".';
+      }
+      var explicitMode=v.explicit||'Standard';
+      var explicitInst='';
+      if(explicitMode.indexOf('Street')!==-1)explicitInst='\n\nEXPLICIT MODE ON: Real street language, profanity, drug refs, gang culture, hood storytelling. Parental Advisory level. Do NOT censor a single word.';
+      else if(explicitMode.indexOf('Sexual')!==-1)explicitInst='\n\nEXPLICIT SEXUAL MODE ON: Write like Too Short or 2 Live Crew at their most explicit. Graphic sexual content, no euphemisms, raunchy and dirty. This is for adults only.';
+      else if(explicitMode.indexOf('Aggressive')!==-1)explicitInst='\n\nEXPLICIT AGGRESSIVE MODE ON: Drill/battle rap energy. Hard disses, threats, violent imagery. Eminem diss track level intensity.';
+      else if(explicitMode.indexOf('Clean')!==-1)explicitInst='\n\nCLEAN MODE: No profanity or explicit content. Radio-safe only. Still hard-hitting and clever.';
+      return 'Write a complete song about: '+v.topic+'\nGenre: '+(v.genre||'Hip-Hop')+'\nMood: '+(v.mood||'Reflective')+(v.extra?'\nAdditional: '+v.extra:'')+ref+explicitInst+'\n\nStructure: [Verse 1], [Chorus], [Verse 2], [Chorus], [Bridge], [Chorus]. Every bar must hit. Real punchlines, real wordplay, real flow.';
+    }
+  },
+
+  { id:'beat-ideas', cat:'music', type:'ai', icon:'🥁', name:'Beat Ideas', desc:'Drum patterns + production blueprint', badges:['music'], tier:'nano',
+    system:'You are a beat maker. Give practical, actionable beat creation advice. When the user provides a reference song or artist, you MAY and SHOULD describe how to create an ORIGINAL beat that captures the same vibe, flow, tempo, and production feel as the reference — this is stylistic inspiration for ORIGINAL work, not copying. Never refuse reference-based prompts. Reference-based production is standard industry practice.',
+    fields:[
+      {name:'genre',label:'Genre',type:'select',options:['Trap','Hip-Hop','Drill','Boom Bap','R&B','Afrobeats','Reggaeton','UK Drill','Phonk','Jersey Club','Latin','Pop'],required:true},
+      {name:'vibe',label:'Vibe / mood',type:'text',placeholder:'e.g. Dark, melodic'},
+      {name:'bpm',label:'BPM preference',type:'text',placeholder:'e.g. 140 or any'},
+      {name:'refArtist',label:'Reference artist (optional)',type:'text',placeholder:'e.g. Metro Boomin, Pi\'erre Bourne'},
+      {name:'refSong',label:'Reference song (optional)',type:'text',placeholder:'e.g. "Mask Off" or link'}
+    ],
+    buildPrompt:function(v){
+      var ref='';
+      if(v.refArtist||v.refSong){
+        ref='\n\nSTYLISTIC REFERENCE (match flow/tempo/production feel for ORIGINAL beat): ';
+        if(v.refArtist)ref+='artist "'+v.refArtist+'"';
+        if(v.refSong)ref+=(v.refArtist?' - ':'')+'song "'+v.refSong+'"';
+        ref+='. Analyze the reference\'s BPM, key, drum feel, 808 patterns, melody style, and mix approach, then give me a blueprint for an ORIGINAL beat with that same vibe/flow/energy.';
+      }
+      return 'Give me a detailed beat creation blueprint:\nGenre: '+v.genre+'\nVibe: '+(v.vibe||'any')+'\nBPM: '+(v.bpm||'suggest one')+ref+'\n\nProvide: BPM + time sig, drum pattern, 808 pattern, melody ideas, mixing tips.';
+    }
+  },
+  { id:'beat-blueprint', cat:'music', type:'ai', icon:'🎛️', name:'Beat Blueprint', desc:'DAW-ready production plan', badges:['music','pro'], tier:'mini',
+    system:'You are an expert music producer with decades of DAW experience. When given a reference song or artist, produce a detailed, step-by-step blueprint to recreate the VIBE, FLOW, and production style in an ORIGINAL work (never actual copy). Treat stylistic references as normal industry practice. Never refuse a reference-based request.',
+    fields:[
+      {name:'reference',label:'Reference song/artist',type:'text',placeholder:'e.g. Future - "Mask Off" or just "Future style"',required:true},
+      {name:'refLink',label:'Reference song link (optional)',type:'text',placeholder:'Spotify/YouTube/SoundCloud URL'},
+      {name:'daw',label:'Your DAW',type:'select',options:['FL Studio','Ableton','Logic Pro','Pro Tools','Studio One','BandLab','GarageBand','Any']}
+    ],
+    buildPrompt:function(v){
+      return 'Write a detailed DAW blueprint to create an ORIGINAL beat in the style/flow/cadence/feel of: '+v.reference+(v.refLink?'\nReference link: '+v.refLink:'')+'\nDAW: '+(v.daw||'Any')+'\n\nI want a beat that CAPTURES THE SAME VIBE, TEMPO, GROOVE, AND ENERGY as the reference, but is 100% ORIGINAL (different melody, different drums, different notes). Cover: BPM + key, project setup, drum recipe (kick/snare/hi-hat patterns), bass/808 pattern with exact rhythm, melody/chord progression ideas, mix chain, arrangement bar-by-bar for 16 bars.';
+    }
+  },
+  { id:'rhyme-finder', cat:'music', type:'ai', icon:'📝', name:'Rhyme Finder', desc:'Perfect & slant rhymes', badges:['music'], tier:'nano',
+    system:'You are a rhyme dictionary for songwriters.',
+    fields:[
+      {name:'word',label:'Word to rhyme',type:'text',required:true},
+      {name:'count',label:'How many',type:'select',options:['10','20','30','50']}
+    ],
+    buildPrompt:function(v){return 'Find rhymes for "'+v.word+'". Give '+(v.count||'20')+' options organized as: PERFECT RHYMES, NEAR RHYMES (slant), MULTI-SYLLABLE RHYMES.';}
+  },
+  // ═══ FULL-PAGE LAUNCHER TOOLS (open in new tab) ═══
+  { id:'stem-splitter-launch', cat:'music', type:'link', icon:'🎚️', name:'Stem Splitter', desc:'Separate vocals/drums/bass/other', badges:['music','pro'], url:'stem-splitter.html' },
+  { id:'music-video-launch', cat:'music', type:'link', icon:'🎬', name:'Music Video Maker', desc:'AI-generated video clips with your song', badges:['music','pro'], url:'music-video.html' },
+  { id:'video-converter-launch', cat:'media', type:'link', icon:'🔄', name:'Video/Audio Converter', desc:'Convert MP3, WAV, OGG, WebM and add spatial effects', badges:['tool'], url:'converter.html' },
+  { id:'algorithm-coach-launch', cat:'social', type:'link', icon:'📈', name:'Algorithm Coach', desc:'Pick a platform and get an exact playbook to get the algorithm working for you', badges:['ai','social'], url:'algorithm-coach.html' },
+  { id:'video-remix-launch', cat:'media', type:'link', ownerOnly:true, icon:'🎭', name:'Video Originality Tool', desc:'Make videos unique enough to pass TikTok, Instagram and YouTube duplicate detection', badges:['tool','media'], url:'video-remix.html' },
+  { id:'link-tools-launch', cat:'social', type:'link', icon:'🔗', name:'Link Tools', desc:'Short links + QR codes for sharing', badges:['social'], url:'link-tools.html' },
+  { id:'master-ai-launch', cat:'music', type:'link', icon:'🎧', name:'Mastering Studio', desc:'Upload + master your songs', badges:['music'], url:'master-ai.html' },
+
+  { id:'music-expert', cat:'music', type:'ai', icon:'🎓', name:'Music Expert', desc:'Ask any music theory/industry question', badges:['music'], tier:'mini',
+    system:'You are a music educator and industry veteran.',
+    fields:[{name:'question',label:'Your question',type:'textarea',required:true}],
+    buildPrompt:function(v){return v.question;}
+  },
+  { id:'mastering-concept', cat:'music', type:'ai', icon:'🎚️', name:'Mastering Guide', desc:'Step-by-step mastering advice', badges:['music','pro'], tier:'mini',
+    system:'You are a mastering engineer. Give practical, specific mastering guidance.',
+    fields:[
+      {name:'genre',label:'Genre',type:'text',required:true},
+      {name:'issues',label:'Current issues (optional)',type:'textarea',placeholder:'e.g. Mix sounds muddy, lacks loudness'}
+    ],
+    buildPrompt:function(v){return 'Mastering advice for a '+v.genre+' track.'+(v.issues?' Issues: '+v.issues:'')+'\n\nProvide: EQ recommendations, compression/limiting settings, stereo imaging tips, target LUFS, reference tracks.';}
+  },
+  { id:'rap-name', cat:'music', type:'ai', icon:'🎭', name:'Rap Name Generator', desc:'Stage names that stick', badges:['music','fun'], tier:'nano',
+    system:'You create memorable, unique rap/artist stage names.',
+    fields:[
+      {name:'vibe',label:'Vibe you want',type:'text',placeholder:'e.g. Dark, luxury, street, mysterious',required:true},
+      {name:'style',label:'Name style',type:'select',options:['Classic (one word)','Lil/Young style','Two-word compound','With number/symbol','Luxury brand feel']}
+    ],
+    buildPrompt:function(v){return 'Generate 10 unique rap/artist stage names. Vibe: '+v.vibe+'. Style: '+(v.style||'Any')+'. For each include a 1-line brand note.';}
+  },
+
+  // ═══ CREATIVE (client-side interactive) ═══
+  { id:'album-cover', cat:'creative', type:'client', handler:'albumCover', icon:'💿', name:'Album Cover Generator', desc:'AI-generated cover with text burned in', badges:['tool','music'],
+    fields:[
+      {name:'artist',label:'Artist name',type:'text',required:true,id:'coverArtist'},
+      {name:'title',label:'Song/album title',type:'text',id:'coverTitle'},
+      {name:'featured',label:'Featured artist (optional)',type:'text',id:'coverFeatured'},
+      {name:'textPos',label:'Text layout',type:'select',options:['bottom','top','center','split (artist top / title center / feat bottom)','none'],id:'coverTextPos'},
+      {name:'textStyle',label:'Text style',type:'select',options:['Classic White','3D Shadow','Neon Glow','Gold Metallic','Chrome','Graffiti Outline','Blood Drip','Fire','Ice Blue','Vintage Stamp'],id:'coverTextStyle'},
+      {name:'bgFx',label:'Background effect',type:'select',options:['none','dark overlay','vignette','film grain','scanlines','color burn','glitch tint','holographic shimmer'],id:'coverBgFx'},
+      {name:'prompt',label:'Visual style description',type:'textarea',placeholder:'e.g. Dark neon city at night, rain reflections',required:true,id:'coverPrompt'}
+    ]
+  },
+
+  { id:'photo-generator', cat:'creative', type:'client', handler:'photoGen', icon:'\uD83D\uDDBC\uFE0F', name:'AI Photo Generator', desc:'Make any image, sized for any platform', badges:['tool'],
+    fields:[
+      {name:'prompt',label:'Describe the image you want',type:'textarea',placeholder:'e.g. A neon synthwave city skyline at sunset, palm trees, retro 80s style',required:true,id:'pgPrompt'},
+      {name:'style',label:'Art style',type:'select',options:['Photorealistic','Digital art','3D render','Anime','Cartoon','Oil painting','Watercolor','Pixel art','Cyberpunk','Vaporwave','Minimalist','Graffiti street art'],id:'pgStyle'},
+      {name:'platforms',label:'Pick platform sizes (select as many as you want)',type:'multipreset',id:'pgPlatforms',options:[
+        {label:'Instagram Post',w:1080,h:1080},
+        {label:'Instagram Story',w:1080,h:1920},
+        {label:'TikTok',w:1080,h:1920},
+        {label:'Facebook Post',w:1200,h:630},
+        {label:'Facebook Cover',w:1640,h:624},
+        {label:'Facebook Profile',w:720,h:720},
+        {label:'YouTube Thumbnail',w:1280,h:720},
+        {label:'YouTube Banner',w:2048,h:1152},
+        {label:'YouTube Profile',w:800,h:800},
+        {label:'Twitter/X Header',w:1500,h:500},
+        {label:'Twitter/X Post',w:1200,h:675},
+        {label:'Square (1:1)',w:1024,h:1024},
+        {label:'Profile Pic',w:512,h:512}
+      ]},
+      {name:'customSize',label:'OR custom size (e.g. 1080x1350) - leave blank to use platforms above',type:'text',placeholder:'WIDTHxHEIGHT',id:'pgCustom'}
+    ]
+  },
+
+  { id:'qr-code', cat:'creative', type:'client', handler:'qrCode', icon:'📱', name:'QR Code Generator', desc:'Branded QR codes for promo', badges:['tool'],
+    fields:[
+      {name:'text',label:'URL or text',type:'text',required:true,id:'qrText'},
+      {name:'size',label:'Size (px)',type:'select',options:['200','300','400','500','800'],id:'qrSize'},
+      {name:'fg',label:'Foreground color',type:'color',id:'qrFg',value:'#000000'},
+      {name:'bg',label:'Background color',type:'color',id:'qrBg',value:'#ffffff'}
+    ]
+  },
+  { id:'meme-creator', cat:'creative', type:'client', handler:'meme', icon:'😂', name:'Meme Creator', desc:'Upload, AI image, AI idea-to-meme, or fully random', badges:['tool','fun'],
+    fields:[
+      {name:'mode',label:'Mode',type:'select',id:'memeMode',options:[
+        'Upload my own image',
+        'AI generates the image (I write the text)',
+        'Give AI an idea — it writes image + viral caption',
+        'Surprise me — totally random AI meme'
+      ]},
+      {name:'image',label:'Upload image (Mode 1 only)',type:'file',accept:'image/*',id:'memeImg'},
+      {name:'aiPrompt',label:'Describe the image, or your meme idea (Modes 2 & 3)',type:'text',id:'memeAiPrompt',placeholder:'e.g. confused cat looking at math equations'},
+      {name:'top',label:'Top text (leave blank to let AI write it)',type:'text',id:'memeTop'},
+      {name:'bottom',label:'Bottom text (leave blank to let AI write it)',type:'text',id:'memeBottom'},
+      {name:'fontSize',label:'Font size',type:'number',value:'80',id:'memeFontSize'},
+      {name:'color',label:'Text color',type:'color',value:'#ffffff',id:'memeColor'},
+      {name:'outline',label:'Outline color',type:'color',value:'#000000',id:'memeOutline'},
+      {name:'watermark',label:'Copyright / credit name (optional)',type:'text',id:'memeWatermark',placeholder:'e.g. YourName or 8BFR — appears small in the corner'}
+    ]
+  },
+  { id:'gif-creator', cat:'creative', type:'client', handler:'gif', icon:'🎞️', name:'GIF Creator', desc:'Animated GIF from images or AI', badges:['tool'],
+    fields:[
+      {name:'images',label:'Select 2+ images (hold Ctrl/Cmd)',type:'file',accept:'image/*',multiple:true,id:'gifFiles'},
+      {name:'aiPrompt',label:'OR describe AI animated GIF',type:'text',id:'gifAiPrompt',placeholder:'e.g. spinning 8BFR logo, dancing cat, bouncing ball'},
+      {name:'aiFrames',label:'AI frames to generate',type:'number',value:'6',id:'gifAiFrames'},
+      {name:'delay',label:'Frame delay (ms)',type:'number',value:'500',id:'gifDelay'},
+      {name:'width',label:'Output width (px)',type:'number',value:'480',id:'gifWidth'}
+    ]
+  },
+
+  // ═══ MEDIA TOOLS ═══
+  { id:'image-resizer', cat:'media', type:'client', handler:'resizer', icon:'📐', name:'Image Resizer', desc:'Resize + aspect ratio presets', badges:['tool'],
+    fields:[
+      {name:'image',label:'Upload image',type:'file',accept:'image/*',required:true,id:'resizeImg'},
+      {name:'preset',label:'Aspect ratio preset',type:'preset',id:'resizePreset',options:[
+        {label:'TikTok/Reels (1080×1920)',w:1080,h:1920},
+        {label:'8BFR Feed (1080×1920)',w:1080,h:1920},
+        {label:'Instagram Post (1080×1080)',w:1080,h:1080},
+        {label:'Instagram Story (1080×1920)',w:1080,h:1920},
+        {label:'YouTube Thumb (1280×720)',w:1280,h:720},
+        {label:'YouTube Banner (2560×1440)',w:2560,h:1440},
+        {label:'Twitter/X Header (1500×500)',w:1500,h:500},
+        {label:'Facebook Cover (820×312)',w:820,h:312},
+        {label:'Album Cover (1024×1024)',w:1024,h:1024},
+        {label:'Avatar (400×400)',w:400,h:400}
+      ]},
+      {name:'w',label:'Width (px)',type:'number',id:'resizeW'},
+      {name:'h',label:'Height (px)',type:'number',id:'resizeH'}
+    ]
+  },
+  { id:'image-converter', cat:'media', type:'client', handler:'converter', icon:'🔄', name:'Image Converter', desc:'PNG / JPG / WebP conversion', badges:['tool'],
+    fields:[
+      {name:'image',label:'Upload image',type:'file',accept:'image/*',required:true,id:'convertImg'},
+      {name:'format',label:'Convert to',type:'select',options:['png','jpeg','webp'],id:'convertFmt'},
+      {name:'quality',label:'Quality (%)',type:'number',value:'90',id:'imgQuality'},
+      {name:'scale',label:'Scale (%)',type:'number',value:'100',id:'imgScale'}
+    ]
+  },
+  { id:'audio-extractor', cat:'media', type:'client', handler:'audioExtract', icon:'🎧', name:'Audio Extractor', desc:'Pull audio from video files', badges:['tool'],
+    fields:[
+      {name:'video',label:'Upload video',type:'file',accept:'video/*',required:true,id:'vidFile'},
+      {name:'format',label:'Output format',type:'select',options:['wav','webm'],id:'audioFmt'}
+    ]
+  },
+  { id:'video-cutter', cat:'media', type:'client', handler:'videoCut', icon:'✂️', name:'Video Trimmer', desc:'Trim video with visual timeline', badges:['tool'],
+    fields:[
+      {name:'video',label:'Upload video',type:'file',accept:'video/*',required:true,id:'trimFile'}
+    ]
+  },
+  { id:'video-joiner', cat:'media', type:'client', handler:'videoJoin', icon:'🔗', name:'Video Joiner', desc:'Join multiple videos into one', badges:['tool'],
+    fields:[
+      {name:'videos',label:'Select 2+ videos',type:'file',accept:'video/*',multiple:true,required:true,id:'joinFiles'}
+    ]
+  },
+  { id:'audio-cutter', cat:'media', type:'client', handler:'audioCut', icon:'🎵', name:'Audio Cutter', desc:'Cut/trim MP3 or audio files', badges:['tool'],
+    fields:[
+      {name:'audio',label:'Upload audio',type:'file',accept:'audio/*',required:true,id:'acutFile'}
+    ]
+  },
+  { id:'speed-changer', cat:'media', type:'client', handler:'speedChange', icon:'⚡', name:'Speed Changer', desc:'Speed up or slow down video/audio', badges:['tool'],
+    fields:[
+      {name:'media',label:'Upload video or audio',type:'file',accept:'video/*,audio/*',required:true,id:'speedFile'},
+      {name:'speed',label:'Speed (0.25x to 4x)',type:'number',value:'1.5',id:'speedVal'}
+    ]
+  },
+  { id:'screen-recorder', cat:'media', type:'client', handler:'screenRec', icon:'🖥️', name:'Screen Recorder', desc:'Record your screen', badges:['tool'],
+    fields:[]
+  },
+  { id:'voice-recorder', cat:'media', type:'client', handler:'voiceRec', icon:'🎤', name:'Voice Recorder', desc:'Record voice/audio', badges:['tool'],
+    fields:[]
+  },
+  { id:'transcribe', cat:'music', type:'client', handler:'transcribeAudio', icon:'📝', name:'Lyrics Transcriber', desc:'Upload a song and get the lyrics transcribed', badges:['music','ai'],
+    fields:[
+      {name:'audio',label:'Upload song (MP3, WAV, M4A, OGG - max 25MB)',type:'file',accept:'audio/*,.mp3,.wav,.m4a,.ogg,.flac',required:true,id:'trFile'},
+      {name:'language',label:'Language',type:'select',options:['Auto Detect','English','Spanish','French','German','Portuguese','Japanese','Korean','Chinese'],id:'trLang'}
+    ]
+  },
+  { id:'green-screen', cat:'media', type:'client', handler:'greenScreen', icon:'🖼️', name:'Background Remover', desc:'Replace background in photos and videos automatically', badges:['tool'],
+    fields:[
+      {name:'media',label:'Upload your photo or video',type:'file',accept:'image/*,video/*',required:true,id:'gsFile'},
+      {name:'bgType',label:'Replace background with',type:'select',options:['Upload Image','Upload Video','Transparent','Solid Color','Music Visualizer','Neon Waves','Starfield','Concert Lights','Gradient Flow','Matrix Rain','Fire & Sparks','Underwater','Vinyl Spin','Laser Show','Aurora Borealis','Confetti Party'],id:'gsBgType'},
+      {name:'bgImage',label:'Background image',type:'file',accept:'image/*',id:'gsBgFile'},
+      {name:'bgVideo',label:'Background video',type:'file',accept:'video/*',id:'gsBgVid'},
+      {name:'tolerance',label:'Tolerance (higher = removes more, lower = keeps more)',type:'number',value:'50',id:'gsTol'},
+      {name:'bgColor',label:'Solid color (if selected)',type:'text',value:'#000000',id:'gsBgColor'},
+      {name:'textOutline',label:'Add dark outline around text/subject (improves readability)',type:'select',options:['Yes','No'],id:'gsOutline'}
+    ]
+  },
+  { id:'text-animation', cat:'creative', type:'client', handler:'textAnim', icon:'✨', name:'Animated Text', desc:'Create animated text GIFs and videos', badges:['tool','fun'],
+    fields:[
+      {name:'text',label:'Text to animate',type:'text',required:true,id:'taText',placeholder:'e.g. 8BFR MUSIC'},
+      {name:'style',label:'Animation style',type:'select',options:['Bounce','Wave','Typewriter','Glow','Shake','Zoom In','Spin','Fade In','Rainbow','Glitch','Slide In','Fire'],id:'taStyle'},
+      {name:'fontSize',label:'Font size',type:'number',value:'60',id:'taSize'},
+      {name:'fontFamily',label:'Font',type:'select',options:['Impact','Bebas Neue','Work Sans','Pacifico','Permanent Marker','Press Start 2P','Arial Black','Courier New'],id:'taFont'},
+      {name:'color',label:'Text color',type:'color',value:'#ffffff',id:'taColor'},
+      {name:'bgColor',label:'Background',type:'select',options:['Transparent','#000000 Black','#ffffff White','#7c3aed Purple','#ef4444 Red','#2563eb Blue','#22c55e Green','#f97316 Orange'],id:'taBg'},
+      {name:'duration',label:'Duration (seconds)',type:'number',value:'3',id:'taDur'}
+    ]
+  },
+
+  // ═══ WRITING ═══
+  { id:'proofread', cat:'writing', type:'ai', icon:'📖', name:'Proofreader', desc:'Grammar, spelling, flow check', tier:'mini',
+    system:'You are a professional copy editor. Show corrected version AND list of changes.',
+    fields:[{name:'text',label:'Paste your text',type:'textarea',required:true}],
+    buildPrompt:function(v){return 'Proofread this for grammar, spelling, punctuation, flow. Show corrected version then numbered list of changes:\n\n'+v.text;}
+  },
+  { id:'rewrite', cat:'writing', type:'ai', icon:'✏️', name:'Rewriter', desc:'Change tone or style', tier:'mini',
+    system:'You adapt voice and tone while preserving meaning.',
+    fields:[
+      {name:'text',label:'Original text',type:'textarea',required:true},
+      {name:'tone',label:'New tone',type:'select',options:['More formal','More casual','More professional','More friendly','More persuasive','More concise','More emotional','More humorous','More confident','Gen-Z style']}
+    ],
+    buildPrompt:function(v){return 'Rewrite this to be '+(v.tone||'better')+':\n\n'+v.text;}
+  },
+  { id:'translator', cat:'writing', type:'client', handler:'translate', icon:'🌐', name:'Translator', desc:'Instant translation, 100+ languages incl. Bisaya', fields:[] },
+  { id:'expand', cat:'writing', type:'ai', icon:'📚', name:'Expand/Continue', desc:'Continue a scene or paragraph', tier:'mini',
+    system:'You continue text matching existing voice, style, pacing.',
+    fields:[
+      {name:'text',label:'Text to continue',type:'textarea',required:true},
+      {name:'direction',label:'Direction (optional)',type:'text'}
+    ],
+    buildPrompt:function(v){return 'Continue this text matching style. Write 2-3 paragraphs.'+(v.direction?'\nDirection: '+v.direction:'')+'\n\n'+v.text;}
+  },
+  { id:'summarize', cat:'writing', type:'ai', icon:'📋', name:'Summarizer', desc:'TL;DR for long text', tier:'nano',
+    system:'You summarize concisely without losing key info.',
+    fields:[
+      {name:'text',label:'Long text',type:'textarea',required:true},
+      {name:'length',label:'Summary length',type:'select',options:['One sentence','Three sentences','Bulleted (5 bullets)','One paragraph','Detailed']}
+    ],
+    buildPrompt:function(v){return 'Summarize as: '+(v.length||'One paragraph')+'\n\n'+v.text;}
+  },
+  { id:'headline', cat:'writing', type:'ai', icon:'🎯', name:'Headline Generator', desc:'Catchy headlines', tier:'nano',
+    system:'You write compelling headlines.',
+    fields:[{name:'topic',label:'Topic/content',type:'textarea',required:true}],
+    buildPrompt:function(v){return 'Generate 10 catchy headlines for: '+v.topic;}
+  },
+  { id:'story-starter', cat:'writing', type:'ai', icon:'📖', name:'Story Starter', desc:'Opening paragraphs for stories', tier:'mini',
+    system:'You write gripping story openings.',
+    fields:[
+      {name:'genre',label:'Genre',type:'select',options:['Thriller','Romance','Sci-Fi','Fantasy','Horror','Mystery','Literary','YA','Memoir']},
+      {name:'setting',label:'Setting/concept',type:'textarea',required:true}
+    ],
+    buildPrompt:function(v){return 'Write 3 different compelling opening paragraphs for a '+(v.genre||'Literary')+' story: '+v.setting;}
+  },
+  { id:'poetry', cat:'writing', type:'ai', icon:'🌹', name:'Poetry Helper', desc:'Poems in any form', tier:'mini',
+    system:'You are a skilled poet.',
+    fields:[
+      {name:'topic',label:'Subject',type:'textarea',required:true},
+      {name:'form',label:'Form',type:'select',options:['Free verse','Haiku','Sonnet','Limerick','Spoken word','Rhyming couplets']}
+    ],
+    buildPrompt:function(v){return 'Write a '+(v.form||'Free verse')+' poem about: '+v.topic;}
+  },
+
+  // ═══ SOCIAL MEDIA ═══
+  { id:'post-generator', cat:'social', type:'ai', icon:'📱', name:'Post Generator', desc:'Captions for any platform', tier:'nano',
+    system:'You are a social media expert.',
+    fields:[
+      {name:'topic',label:'Post about?',type:'textarea',required:true},
+      {name:'platform',label:'Platform',type:'select',options:['Instagram','TikTok','Twitter/X','Facebook','LinkedIn','Threads','8BFR','Reddit','YouTube']},
+      {name:'cta',label:'Call to action',type:'text'}
+    ],
+    buildPrompt:function(v){return 'Social media post.\nPlatform: '+(v.platform||'Instagram')+'\nTopic: '+v.topic+(v.cta?'\nCTA: '+v.cta:'')+'\n\nEngaging, platform-appropriate, include hashtags.';}
+  },
+  { id:'hashtag-gen', cat:'social', type:'ai', icon:'#️⃣', name:'Hashtag Generator', desc:'Trending hashtags', tier:'nano',
+    system:'You know social discovery trends.',
+    fields:[
+      {name:'topic',label:'Content topic',type:'text',required:true},
+      {name:'platform',label:'Platform',type:'select',options:['Instagram','TikTok','Twitter/X','YouTube','LinkedIn']}
+    ],
+    buildPrompt:function(v){return 'Hashtag strategy for '+(v.platform||'Instagram')+' about: '+v.topic+'\n\n5 HIGH-VOLUME, 10 MEDIUM niche, 5 LOW specific tags.';}
+  },
+  { id:'bio-writer', cat:'social', type:'ai', icon:'👤', name:'Bio Writer', desc:'Profile bios that convert', tier:'nano',
+    system:'You write compelling bios within character limits.',
+    fields:[
+      {name:'who',label:'Who you are / what you do',type:'textarea',required:true},
+      {name:'platform',label:'Platform',type:'select',options:['Instagram (150)','Twitter/X (160)','TikTok (80)','LinkedIn (220)','8BFR (200)','YouTube (1000)']},
+      {name:'style',label:'Style',type:'select',options:['Professional','Fun/playful','Minimalist','Bold','Mysterious','Emoji-heavy']}
+    ],
+    buildPrompt:function(v){return 'Write 5 bio options for '+(v.platform||'Instagram')+', '+(v.style||'Professional')+' style.\nAbout: '+v.who+'\nStay within char limit. Number them.';}
+  },
+  { id:'caption', cat:'social', type:'ai', icon:'💬', name:'Caption Writer', desc:'Scroll-stopping captions', tier:'nano',
+    system:'You write captions that drive engagement.',
+    fields:[
+      {name:'describe',label:'Describe photo/video',type:'textarea',required:true},
+      {name:'vibe',label:'Caption vibe',type:'select',options:['Funny','Inspirational','Poetic','Short & punchy','Storytelling','Question']}
+    ],
+    buildPrompt:function(v){return 'Write 3 captions, '+(v.vibe||'short & punchy')+' vibe, for:\n'+v.describe;}
+  },
+  { id:'reply-writer', cat:'social', type:'ai', icon:'↩️', name:'Reply Writer', desc:'Smart replies to comments/DMs', tier:'nano',
+    system:'You are the person RESPONDING TO a message, not rewriting the message. When given a message that someone received, write AUTHENTIC RESPONSES back to that person — as if you were the receiver replying to them. Never rewrite or paraphrase the original message.',
+    fields:[
+      {name:'msg',label:'Message you received (paste what they said)',type:'textarea',required:true,placeholder:'e.g. "Hey, loved your last track, any chance I can get a feature?"'},
+      {name:'tone',label:'Your reply tone',type:'select',options:['Friendly','Professional','Witty','Apologetic','Grateful','Firm but polite','Flirty','Playful','Short & blunt']},
+      {name:'context',label:'Anything about your situation? (optional)',type:'text',placeholder:'e.g. "I\'m too busy this month" or "I like this person"'}
+    ],
+    buildPrompt:function(v){return 'Someone sent me this message:\n\n"'+v.msg+'"\n\nWrite 3 different REPLIES I could send back to them. Tone: '+(v.tone||'Friendly')+'.'+(v.context?' My situation: '+v.context:'')+' Label them "Option 1:", "Option 2:", "Option 3:". Do NOT rewrite their message — write MY responses TO them.';}
+  },
+
+  // ═══ VIDEO ═══
+  { id:'video-concept', cat:'video', type:'ai', icon:'🎬', name:'Video Concept', desc:'Script + shot ideas', tier:'mini',
+    system:'You create actionable video concepts with hooks and shot ideas.',
+    fields:[
+      {name:'topic',label:'Video topic',type:'textarea',required:true},
+      {name:'platform',label:'Platform',type:'select',options:['TikTok (9:16, 60s)','Instagram Reels (9:16, 90s)','YouTube Shorts (9:16, 60s)','YouTube (16:9, 8-10 min)','YouTube (16:9, 15+ min)']},
+      {name:'goal',label:'Goal',type:'select',options:['Educate','Entertain','Sell','Build community','Go viral']}
+    ],
+    buildPrompt:function(v){return 'Video concept.\nPlatform: '+(v.platform||'TikTok')+'\nGoal: '+(v.goal||'Entertain')+'\nTopic: '+v.topic+'\n\nProvide: 3 hooks, full script with timestamps, B-roll ideas, caption + hashtags.';}
+  },
+  { id:'video-blueprint', cat:'video', type:'ai', icon:'🎥', name:'Video Blueprint', desc:'Full production plan', badges:['pro'], tier:'mini',
+    system:'You are a video director and editor.',
+    fields:[
+      {name:'topic',label:'Video idea',type:'textarea',required:true},
+      {name:'length',label:'Length',type:'select',options:['Under 60s','1-3 min','3-8 min','8-15 min','15+ min']}
+    ],
+    buildPrompt:function(v){return 'Video production blueprint.\nTopic: '+v.topic+'\nLength: '+(v.length||'1-3 min')+'\n\nPre-prod, script with timecodes, editing/transitions, music/SFX, thumbnail, titles.';}
+  },
+  { id:'music-video-storyboard', cat:'video', type:'ai', icon:'🎞️', name:'Music Video Storyboard', desc:'Scene-by-scene for your song', badges:['music','pro'], tier:'mini',
+    system:'You create music video concepts with detailed scene breakdowns. When given a reference artist or song, match the visual style, energy, and storytelling approach while creating ORIGINAL scenes. Never refuse a reference-based creative brief.',
+    fields:[
+      {name:'lyrics',label:'Song lyrics or concept',type:'textarea',required:true},
+      {name:'budget',label:'Budget level',type:'select',options:['DIY/phone','Low (<$500)','Mid ($500-5k)','High ($5k+)']},
+      {name:'refArtist',label:'Reference artist/video (optional)',type:'text',placeholder:'e.g. Tyler, The Creator visuals'},
+      {name:'refSong',label:'Reference music video (optional)',type:'text',placeholder:'e.g. "ALL THE STARS" by SZA & Kendrick'}
+    ],
+    buildPrompt:function(v){
+      var ref='';
+      if(v.refArtist||v.refSong){
+        ref='\n\nSTYLISTIC REFERENCE (match visual style/energy for ORIGINAL scenes): ';
+        if(v.refArtist)ref+='artist "'+v.refArtist+'"';
+        if(v.refSong)ref+=(v.refArtist?' - ':'')+'video "'+v.refSong+'"';
+        ref+='. Match the visual tone, color palette, camera movement, and editing rhythm but ALL scenes should be 100% original ideas.';
+      }
+      return 'Music video storyboard.\nBudget: '+(v.budget||'DIY')+'\nLyrics/concept:\n'+v.lyrics+ref+'\n\nProvide: concept, 8-12 scenes with shots/locations/transitions, wardrobe, B-roll, editing style.';
+    }
+  },
+
+  // ═══ FUN & GAMES ═══
+  { id:'roast', cat:'fun', type:'ai', icon:'🔥', name:'Roast Generator', desc:'Light-hearted roasts', badges:['fun'], tier:'nano',
+    system:'You write light, playful roasts that tease without being mean-spirited. Keep them clever and PG-13.',
+    fields:[{name:'target',label:'Who/what to roast',type:'textarea',required:true}],
+    buildPrompt:function(v){return 'Write 5 light, clever, playful roasts about: '+v.target+'\nKeep it PG-13, funny not mean.';}
+  },
+  { id:'pickup', cat:'fun', type:'ai', icon:'💕', name:'Pickup Line', desc:'Smooth openers', badges:['fun'], tier:'nano',
+    system:'You write creative pickup lines.',
+    fields:[
+      {name:'context',label:'Context about them',type:'text',placeholder:'e.g. Loves hip-hop, studies art',required:true},
+      {name:'vibe',label:'Vibe',type:'select',options:['Smooth','Funny','Cheesy','Sweet','Witty','Music-themed']}
+    ],
+    buildPrompt:function(v){return 'Write 5 '+(v.vibe||'Smooth')+' pickup lines for someone who: '+v.context;}
+  },
+  { id:'would-you', cat:'fun', type:'ai', icon:'🤔', name:'Would You Rather', desc:'Tough choice questions', badges:['fun'], tier:'nano',
+    system:'You create fun, tough "would you rather" questions.',
+    fields:[
+      {name:'theme',label:'Theme',type:'text',placeholder:'e.g. Music industry, food, travel',required:true},
+      {name:'count',label:'How many',type:'select',options:['5','10','20']}
+    ],
+    buildPrompt:function(v){return 'Create '+(v.count||'10')+' "Would You Rather..." questions about: '+v.theme+'\nMake them genuinely tough to choose between.';}
+  },
+  { id:'artist-lookup', cat:'fun', type:'ai', icon:'🔍', name:'Artist Info', desc:'Facts, stats, or Spotify lookup', badges:['music','fun'], tier:'nano',
+    system:'You are a music research assistant. You receive either an artist name OR a Spotify link OR scraped artist metadata from the web. Present the information cleanly. If only a name and you have no knowledge of them, tell the user "I don\'t have info on this independent artist — try pasting their Spotify link for real-time lookup" — don\'t make up facts. When given Spotify metadata, use those real facts directly.',
+    handler:'artistLookup',   // custom handler that pre-fetches Spotify data
+    fields:[
+      {name:'artist',label:'Artist name',type:'text',placeholder:'e.g. Kendrick Lamar'},
+      {name:'spotifyUrl',label:'Spotify artist/track link (optional - for independent artists)',type:'text',placeholder:'https://open.spotify.com/artist/...'}
+    ],
+    buildPrompt:function(v){
+      // Spotify info will be pre-injected by the handler
+      return 'Give me info on: '+(v.artist||'this artist')+(v._spotifyInfo?'\n\nREAL-TIME DATA FROM SPOTIFY:\n'+v._spotifyInfo:'')+'\n\nInclude: genre, origin, notable songs, career highlights, interesting facts. If you have no knowledge of this artist and no Spotify data was provided, say so directly.';
+    }
+  },
+
+  // ═══ BUSINESS ═══
+  { id:'email', cat:'business', type:'ai', icon:'✉️', name:'Email Writer', desc:'Professional or casual emails', tier:'nano',
+    system:'You write clear, effective emails.',
+    fields:[
+      {name:'purpose',label:'Email about?',type:'textarea',required:true},
+      {name:'recipient',label:'Recipient',type:'text'},
+      {name:'tone',label:'Tone',type:'select',options:['Formal','Professional','Friendly','Casual','Apologetic','Assertive','Grateful']}
+    ],
+    buildPrompt:function(v){return 'Email.\nPurpose: '+v.purpose+'\nTo: '+(v.recipient||'general')+'\nTone: '+(v.tone||'Professional')+'\n\nSubject line + sign-off.';}
+  },
+  { id:'pitch', cat:'business', type:'ai', icon:'🎯', name:'Pitch Writer', desc:'Cold outreach & pitches', tier:'mini',
+    system:'You write compelling, concise pitches.',
+    fields:[
+      {name:'what',label:'What are you pitching?',type:'textarea',required:true},
+      {name:'audience',label:'Audience',type:'text',required:true},
+      {name:'goal',label:'Pitch goal',type:'text'}
+    ],
+    buildPrompt:function(v){return 'Pitch.\nProduct: '+v.what+'\nAudience: '+v.audience+'\nGoal: '+(v.goal||'open a conversation');}
+  },
+  { id:'business-plan', cat:'business', type:'ai', icon:'📊', name:'Mini Business Plan', desc:'One-pager for any idea', badges:['pro'], tier:'mini',
+    system:'You are a strategic business advisor.',
+    fields:[{name:'idea',label:'Business idea',type:'textarea',required:true}],
+    buildPrompt:function(v){return 'One-page business plan for: '+v.idea+'\n\n1) Problem, 2) Solution, 3) Target customer, 4) Revenue, 5) Go-to-market, 6) Risks, 7) First 90 days.';}
+  },
+
+  // ═══ GENERAL ═══
+  { id:'ai-chat', cat:'general', type:'ai', icon:'🤖', name:'AI Chat', desc:'Ask anything', tier:'nano',
+    system:'You are a helpful, friendly assistant.',
+    fields:[{name:'message',label:'Your message',type:'textarea',required:true}],
+    buildPrompt:function(v){return v.message;}
+  },
+  { id:'eli5', cat:'general', type:'ai', icon:'👶', name:"Explain Like I'm 5", desc:'Complex topics made simple', tier:'nano',
+    system:'You explain things simply for kids.',
+    fields:[{name:'topic',label:'What to explain',type:'textarea',required:true}],
+    buildPrompt:function(v){return 'Explain like I\'m 5 with simple words and analogies:\n\n'+v.topic;}
+  },
+  { id:'brainstorm', cat:'general', type:'ai', icon:'💡', name:'Brainstormer', desc:'Ideas for anything', tier:'nano',
+    system:'You generate creative, diverse, actionable ideas.',
+    fields:[
+      {name:'prompt',label:'Need ideas for?',type:'textarea',required:true},
+      {name:'count',label:'How many',type:'select',options:['5','10','15','25']}
+    ],
+    buildPrompt:function(v){return 'Generate '+(v.count||'10')+' diverse creative ideas for: '+v.prompt+'\nNumber them and briefly explain each.';}
+  }
+];
+
+// ─── RENDERING ─────────────────────────────────────────────
+var activeCategory='all', currentTool=null;
+
+function renderNav(){
+  var nav=document.getElementById('catNav');
+  var html='<button class="cat-btn'+(activeCategory==='all'?' active':'')+'" onclick="setCategory(\'all\')">All Tools</button>';
+  CATEGORIES.forEach(function(c){
+    html+='<button class="cat-btn'+(activeCategory===c.id?' active':'')+'" onclick="setCategory(\''+c.id+'\')">'+c.name+'</button>';
+  });
+  nav.innerHTML=html;
+}
+function setCategory(id){activeCategory=id;renderNav();renderTools();window.scrollTo({top:0,behavior:'smooth'});}
+window.setCategory=setCategory;
+
+function renderTools(){
+  var container=document.getElementById('toolsContainer');
+  var q=(document.getElementById('searchInput').value||'').toLowerCase();
+  var html='';
+  CATEGORIES.forEach(function(cat){
+    if(activeCategory!=='all'&&activeCategory!==cat.id)return;
+    var catTools=TOOLS.filter(function(t){
+      if(t.cat!==cat.id)return false;
+      if(t.ownerOnly && !isOwnerOrCoOwner)return false;
+      if(!q)return true;
+      return (t.name+' '+t.desc).toLowerCase().indexOf(q)!==-1;
+    });
+    if(!catTools.length)return;
+    html+='<h2 class="cat-title">'+cat.name+'</h2>';
+    html+='<div class="cat-sub">'+catTools.length+' tool'+(catTools.length===1?'':'s')+'</div>';
+    html+='<div class="tools-grid">';
+    catTools.forEach(function(t){
+      var badges=(t.badges||[]).map(function(b){return '<span class="tool-badge badge-'+b+'">'+b.toUpperCase()+'</span>';}).join('');
+      html+='<div class="tool" onclick="openTool(\''+t.id+'\')">' +badges+
+            '<div class="tool-icon">'+t.icon+'</div>'+
+            '<div class="tool-name">'+t.name+'</div>'+
+            '<div class="tool-desc">'+t.desc+'</div></div>';
+    });
+    html+='</div>';
+  });
+  if(!html)html='<div class="empty">No tools match your search.</div>';
+  container.innerHTML=html;
+}
+
+function openTool(id){
+  var tool=TOOLS.find(function(t){return t.id===id;});
+  if(!tool)return;
+
+  // Launcher tools: just open the URL in a new tab, no modal
+  if(tool.type==='link' && tool.url){
+    window.open(tool.url, tool.target||'_blank', 'noopener');
+    return;
+  }
+
+  currentTool=tool;
+  conversationHistory = [];  // Reset conversation when opening a new tool
+  document.getElementById('mIcon').textContent=tool.icon;
+  document.getElementById('mName').textContent=tool.name;
+  document.getElementById('mResult').innerHTML='';
+  document.getElementById('mResult').classList.remove('show');
+  document.getElementById('modalOverlay').classList.add('show');
+
+  if(tool.id==='translator'){
+    document.getElementById('mRun').style.display='none';
+    document.getElementById('mFields').innerHTML=buildTranslatorUI();
+    initTranslatorUI();
+    return;
+  }
+  document.getElementById('mRun').style.display='';
+
+  var fieldsHtml='';
+  tool.fields.forEach(function(f){
+    var req=f.required?'<span class="req">*</span>':'';
+    var id=f.id||f.name;
+    fieldsHtml+='<div class="field"><label>'+f.label+' '+req+'</label>';
+    if(f.type==='textarea'){
+      fieldsHtml+='<textarea id="'+id+'" data-name="'+f.name+'" placeholder="'+(f.placeholder||'')+'"'+(f.required?' required':'')+'></textarea>';
+    } else if(f.type==='select'){
+      fieldsHtml+='<select id="'+id+'" data-name="'+f.name+'"><option value="">Choose...</option>';
+      (f.options||[]).forEach(function(o){fieldsHtml+='<option value="'+o+'">'+o+'</option>';});
+      fieldsHtml+='</select>';
+    } else if(f.type==='color'){
+      fieldsHtml+='<input type="color" id="'+id+'" data-name="'+f.name+'" value="'+(f.value||'#000000')+'">';
+    } else if(f.type==='file'){
+      fieldsHtml+='<input type="file" id="'+id+'" data-name="'+f.name+'" accept="'+(f.accept||'*')+'"'+(f.multiple?' multiple':'')+(f.required?' required':'')+' onchange="handleFilePreview(this,\''+id+'\')">';
+      fieldsHtml+='<div id="'+id+'Preview" style="margin-top:0.5rem;"></div>';
+    } else if(f.type==='number'){
+      fieldsHtml+='<input type="number" id="'+id+'" data-name="'+f.name+'" value="'+(f.value||'')+'" placeholder="'+(f.placeholder||'')+'">';
+    } else if(f.type==='preset'){
+      fieldsHtml+='<div class="preset-row" id="'+id+'Row">';
+      (f.options||[]).forEach(function(o,idx){
+        fieldsHtml+='<button type="button" class="preset" data-w="'+o.w+'" data-h="'+o.h+'" onclick="applyPreset(this,\''+id+'\')">'+o.label+'</button>';
+      });
+      fieldsHtml+='</div><input type="hidden" id="'+id+'" data-name="'+f.name+'">';
+    } else if(f.type==='multipreset'){
+      fieldsHtml+='<div class="multipreset-grid" id="'+id+'" data-name="'+f.name+'" style="display:flex;flex-wrap:wrap;gap:.4rem;">';
+      (f.options||[]).forEach(function(o){
+        fieldsHtml+='<button type="button" class="mp-opt" data-w="'+o.w+'" data-h="'+o.h+'" data-label="'+o.label+'" onclick="this.classList.toggle(\'on\');this.style.background=this.classList.contains(\'on\')?\'rgba(124,58,237,.5)\':\'rgba(0,0,0,.3)\';this.style.borderColor=this.classList.contains(\'on\')?\'#a855f7\':\'rgba(124,58,237,.35)\';" style="padding:.4rem .6rem;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid rgba(124,58,237,.35);background:rgba(0,0,0,.3);color:#eae6ff;">'+o.label+'<br><span style="font-size:.62rem;opacity:.6;">'+o.w+'x'+o.h+'</span></button>';
+      });
+      fieldsHtml+='</div>';
+    } else {
+      fieldsHtml+='<input type="text" id="'+id+'" data-name="'+f.name+'" placeholder="'+(f.placeholder||'')+'"'+(f.required?' required':'')+'>';
+    }
+    fieldsHtml+='</div>';
+  });
+  document.getElementById('mFields').innerHTML=fieldsHtml;
+  if(tool.id==='meme-creator'){
+    var wmInput=document.getElementById('memeWatermark');
+    var wmField=wmInput&&wmInput.closest('.field');
+    if(wmField){
+      var ownerNow=(typeof isOwnerOrCoOwner!=='undefined')&&!!isOwnerOrCoOwner;
+      wmField.style.display=ownerNow?'':'none';
+    }
+  }
+  document.getElementById('mRun').disabled=false;
+  document.getElementById('mRun').textContent=tool.type==='client'?'🚀 Create':'✨ Generate';
+  // Restore saved field values and attach autosave
+  restoreToolFields(tool);
+  attachFieldSavers(tool);
+}
+window.openTool=openTool;
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+  currentTool=null;
+}
+window.closeModal=closeModal;
+
+// Preset button -> fill W/H for resizer
+window.applyPreset=function(btn,presetId){
+  btn.parentNode.querySelectorAll('.preset').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  var w=btn.dataset.w,h=btn.dataset.h;
+  document.getElementById(presetId).value=w+'x'+h;
+  // If there are w/h inputs, fill them
+  var wEl=document.getElementById('resizeW'),hEl=document.getElementById('resizeH');
+  if(wEl)wEl.value=w;
+  if(hEl)hEl.value=h;
+};
+
+// File preview (show thumbnail for images, file info otherwise)
+window.handleFilePreview=function(input,id){
+  var preview=document.getElementById(id+'Preview');
+  if(!preview||!input.files||!input.files.length){preview.innerHTML='';return;}
+  var files=Array.from(input.files);
+  if(input.multiple){
+    // GIF strip preview
+    var stripHtml='<div class="gif-strip">';
+    files.forEach(function(f){
+      var url=URL.createObjectURL(f);
+      stripHtml+='<img src="'+url+'" alt="">';
+    });
+    stripHtml+='</div><div style="font-size:0.75rem;color:rgba(168,85,247,0.7);">'+files.length+' files selected</div>';
+    preview.innerHTML=stripHtml;
+  } else {
+    var f=files[0];
+    if(f.type.startsWith('image/')){
+      var url=URL.createObjectURL(f);
+      preview.innerHTML='<img src="'+url+'" style="max-width:200px;max-height:150px;border-radius:8px;"><div style="font-size:0.75rem;color:rgba(168,85,247,0.7);">'+f.name+' ('+(f.size/1024).toFixed(1)+' KB)</div>';
+    } else if(f.type.startsWith('video/')){
+      var url=URL.createObjectURL(f);
+      preview.innerHTML='<video src="'+url+'" controls style="max-width:100%;max-height:200px;border-radius:8px;"></video><div style="font-size:0.75rem;color:rgba(168,85,247,0.7);">'+f.name+' ('+(f.size/(1024*1024)).toFixed(1)+' MB)</div>';
+    } else {
+      preview.innerHTML='<div style="font-size:0.82rem;">'+f.name+' ('+(f.size/1024).toFixed(1)+' KB)</div>';
+    }
+  }
+};
+
+function collectValues(){
+  var values={};
+  var missing=false;
+  currentTool.fields.forEach(function(f){
+    var id=f.id||f.name;
+    var el=document.getElementById(id);
+    if(f.type==='file'){
+      values[f.name]=el&&el.files?el.files:null;
+      if(f.required&&(!el||!el.files||!el.files.length))missing=true;
+    } else if(f.type==='multipreset'){
+      var picks=[];
+      if(el)el.querySelectorAll('.mp-opt.on').forEach(function(b){picks.push({label:b.dataset.label,w:parseInt(b.dataset.w),h:parseInt(b.dataset.h)});});
+      values[f.name]=picks;
+      if(f.required&&!picks.length)missing=true;
+    } else {
+      var val=el?(el.value||'').trim():'';
+      values[f.name]=val;
+      if(f.required&&!val)missing=true;
+    }
+  });
+  return {values:values,missing:missing};
+}
+
+function showResult(html){
+  var r=document.getElementById('mResult');
+  r.classList.add('show');
+  r.innerHTML=html;
+  // Add Read Aloud button if result has readable text (not just media)
+  var textContent=r.textContent.trim();
+  if(textContent.length>20&&!html.match(/^<(video|audio|canvas|img)/)){
+    var speakBtn=document.createElement('button');
+    speakBtn.className='btn btn-ghost btn-sm';
+    speakBtn.textContent='Read Aloud';
+    speakBtn.style.cssText='margin-top:.3rem;font-size:.6rem;';
+    speakBtn.onclick=function(){
+      speechSynthesis.cancel();
+      var utter=new SpeechSynthesisUtterance(textContent.substring(0,5000));
+      utter.rate=1;speechSynthesis.speak(utter);
+      speakBtn.textContent='Speaking...';
+      utter.onend=function(){speakBtn.textContent='Read Aloud';};
+    };
+    var stopBtn=document.createElement('button');
+    stopBtn.className='btn btn-ghost btn-sm';
+    stopBtn.textContent='Stop';
+    stopBtn.style.cssText='margin-top:.3rem;margin-left:.2rem;font-size:.6rem;';
+    stopBtn.onclick=function(){speechSynthesis.cancel();speakBtn.textContent='Read Aloud';};
+    r.appendChild(speakBtn);r.appendChild(stopBtn);
+  }
+}
+function showError(msg){
+  showResult('<div class="error-msg">⚠️ '+esc(msg)+'</div>');
+}
+function showLoading(msg){
+  showResult('<div class="loading-text"><span class="spinner"></span>'+esc(msg||'Working...')+'</div>');
+}
+function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// MAIN DISPATCH — runs either AI text tool or client-side tool
+async function runTool(){
+  if(!currentTool)return;
+  var c=collectValues();
+  if(c.missing){showError('Please fill in all required fields (*)');return;}
+
+  var btn=document.getElementById('mRun');
+  btn.disabled=true;
+  btn.textContent='Working...';
+
+  try {
+    if(currentTool.type==='ai'){
+      await runAiTool(c.values);
+    } else if(currentTool.type==='client'){
+      await CLIENT_HANDLERS[currentTool.handler](c.values);
+    }
+  } catch(e){
+    showError('Error: '+(e.message||e));
+  }
+
+  btn.disabled=false;
+  btn.textContent=currentTool.type==='client'?'🚀 Create Again':'✨ Generate Again';
+}
+window.runTool=runTool;
+window.downloadPgImage=function(idx){
+  var r=window._pgResults&&window._pgResults[idx];
+  if(!r||!r.data)return;
+  var a=document.createElement('a');a.href=r.data;a.download='8bfr-'+r.label.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+r.w+'x'+r.h+'.png';
+  document.body.appendChild(a);a.click();a.remove();
+};
+window.downloadAllPg=function(){
+  var rs=(window._pgResults||[]).filter(function(r){return r.data;});
+  var i=0;
+  (function next(){
+    if(i>=rs.length)return;
+    var r=rs[i];var a=document.createElement('a');a.href=r.data;a.download='8bfr-'+r.label.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+r.w+'x'+r.h+'.png';
+    document.body.appendChild(a);a.click();a.remove();
+    i++;setTimeout(next,1200);
+  })();
+};
+
+// Conversation history for current tool session
+var conversationHistory = [];
+
+async function runAiTool(values, isFollowUp){
+  var prompt = isFollowUp ? values.followUpText : currentTool.buildPrompt(values);
+
+  // Pre-processing: Artist Info tool needs Spotify oEmbed hydration
+  if (currentTool.handler === 'artistLookup' && !isFollowUp) {
+    var spotifyUrl = values.spotifyUrl && values.spotifyUrl.trim();
+    if (spotifyUrl && spotifyUrl.indexOf('spotify.com') !== -1) {
+      showLoading('Fetching Spotify metadata...');
+      try {
+        var oEmbed = await fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent(spotifyUrl));
+        if (oEmbed.ok) {
+          var embedData = await oEmbed.json();
+          values._spotifyInfo = 'Name: ' + (embedData.title || 'unknown') +
+            (embedData.thumbnail_url ? '\nImage: ' + embedData.thumbnail_url : '') +
+            '\nSpotify URL: ' + spotifyUrl;
+          prompt = currentTool.buildPrompt(values);
+        }
+      } catch(e) {
+        console.warn('Spotify oEmbed failed:', e.message);
+      }
+    }
+  }
+
+  showLoading(isFollowUp ? 'Thinking...' : 'Generating...');
+
+  // Build messages array with 8BFR context, conversation history, and new message
+  var systemContent = (currentTool.system || '') + '\n\n' + BFR_CONTEXT;
+  var messages = [{role:'system', content:systemContent}];
+
+  // Include prior turns in this conversation
+  if (isFollowUp && conversationHistory.length > 0) {
+    messages = messages.concat(conversationHistory);
+  }
+
+  messages.push({role:'user', content:prompt});
+
+  var res = await fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      messages: messages,
+      tier: currentTool.tier || 'nano',
+      max_tokens: 1500
+    })
+  });
+  var data = await res.json();
+  if (data.error) {
+    showError(data.error + (data.attempts ? ' — ' + JSON.stringify(data.attempts).slice(0,200) : ''));
+    return;
+  }
+  var text = data.text || '(No response)';
+  window._lastResult = text;
+
+  // Update conversation history
+  conversationHistory.push({role:'user', content:prompt});
+  conversationHistory.push({role:'assistant', content:text});
+  // Cap history at 20 turns to keep token usage reasonable
+  if (conversationHistory.length > 20) {
+    conversationHistory = conversationHistory.slice(-20);
+  }
+
+  renderAiResult(text, data.provider);
+}
+
+function renderAiResult(text, provider) {
+  var actions = '<div class="result-actions">' +
+    '<button class="btn btn-ghost btn-sm" onclick="copyResult()">📋 Copy</button>' +
+    '<button class="btn btn-ghost btn-sm" onclick="googleLookup()">🔍 Google</button>' +
+    '<button class="btn btn-ghost btn-sm" onclick="regenAiTool()">🔄 Regenerate</button>' +
+    '<button class="btn btn-ghost btn-sm" onclick="shareAiResult()">🔗 Share</button>' +
+    '</div>';
+
+  // Conversation follow-up input
+  var followUp = '<div style="margin-top:0.85rem;padding-top:0.85rem;border-top:1px solid rgba(124,58,237,0.25);">' +
+    '<label style="display:block;font-size:0.8rem;font-weight:700;color:#a855f7;margin-bottom:0.4rem;">Continue the conversation</label>' +
+    '<div style="display:flex;gap:0.4rem;">' +
+    '<input type="text" id="followUpInput" placeholder="Type a follow-up message..." style="flex:1;padding:0.55rem 0.8rem;background:rgba(0,0,0,0.4);border:1px solid rgba(124,58,237,0.35);border-radius:8px;color:#eae6ff;font-size:0.9rem;outline:none;font-family:inherit;" onkeydown="if(event.key===\'Enter\')sendFollowUp();">' +
+    '<button class="btn btn-sm" style="width:auto;padding:0.5rem 1rem;" onclick="sendFollowUp()">Send</button>' +
+    '</div>' +
+    '</div>';
+
+  var providerTag = '<div style="font-size:0.7rem;color:rgba(168,85,247,0.5);margin-top:0.5rem;">via ' + (provider || 'ai') + '</div>';
+
+  // Build full conversation view if there are multiple turns
+  var convoHtml = '<div>' + esc(text) + '</div>';
+  if (conversationHistory.length > 2) {
+    var convoFull = '';
+    for (var i = 0; i < conversationHistory.length; i++) {
+      var m = conversationHistory[i];
+      var bg = m.role === 'user' ? 'rgba(124,58,237,0.15)' : 'rgba(0,0,0,0.25)';
+      var label = m.role === 'user' ? 'You' : 'AI';
+      var labelColor = m.role === 'user' ? '#c084fc' : '#a855f7';
+      convoFull += '<div style="background:' + bg + ';padding:0.6rem 0.85rem;border-radius:8px;margin-bottom:0.5rem;">' +
+        '<div style="font-size:0.7rem;color:' + labelColor + ';font-weight:700;margin-bottom:0.3rem;">' + label + '</div>' +
+        '<div style="white-space:pre-wrap;">' + esc(m.content) + '</div>' +
+        '</div>';
+    }
+    convoHtml = convoFull;
+  }
+
+  showResult(convoHtml + actions + followUp + providerTag);
+
+  // Auto-focus follow-up input
+  setTimeout(function(){
+    var inp = document.getElementById('followUpInput');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+window.sendFollowUp = async function() {
+  var inp = document.getElementById('followUpInput');
+  if (!inp) return;
+  var txt = inp.value.trim();
+  if (!txt) return;
+
+  var btn = document.getElementById('mRun');
+  if (btn) { btn.disabled = true; }
+
+  try {
+    await runAiTool({followUpText: txt}, true);
+  } catch(e) {
+    showError('Follow-up failed: ' + (e.message || e));
+  }
+
+  if (btn) { btn.disabled = false; }
+};
+
+window.regenAiTool = function() {
+  // Clear history and re-run from scratch using original form values
+  conversationHistory = [];
+  var c = collectValues();
+  runAiTool(c.values, false);
+};
+
+window.googleLookup = function() {
+  if (!window._lastResult) return;
+  // Take first 80 chars of result, or the tool name + most recent user question
+  var queryBase = '';
+  if (conversationHistory.length > 0) {
+    // Use last user message as the search query
+    for (var i = conversationHistory.length - 1; i >= 0; i--) {
+      if (conversationHistory[i].role === 'user') {
+        queryBase = conversationHistory[i].content.slice(0, 120);
+        break;
+      }
+    }
+  }
+  if (!queryBase) queryBase = (currentTool && currentTool.name) || '';
+  var url = 'https://www.google.com/search?q=' + encodeURIComponent(queryBase);
+  window.open(url, '_blank', 'noopener');
+};
+
+window.copyResult=function(){
+  if(!window._lastResult)return;
+  navigator.clipboard.writeText(window._lastResult).then(function(){
+    var r=document.getElementById('mResult');
+    var ex=r.querySelector('.success-msg');if(ex)ex.remove();
+    r.insertAdjacentHTML('beforeend','<div class="success-msg">✓ Copied</div>');
+    setTimeout(function(){var m=r.querySelector('.success-msg');if(m)m.remove();},2000);
+  });
+};
+
+window.shareAiResult=function(){
+  if(!window._lastResult)return;
+  if(window.Share&&window.Share.open){
+    window.Share.open({type:'custom',url:'https://8bfr.com/ai-studio.html',title:currentTool?currentTool.name+' on 8BFR':'AI-generated on 8BFR',description:window._lastResult.slice(0,160)});
+  } else if(navigator.share){
+    navigator.share({text:window._lastResult,url:'https://8bfr.com/ai-studio.html'});
+  } else {
+    navigator.clipboard.writeText(window._lastResult);
+    alert('Copied!');
+  }
+};
+
+// Load scripts dynamically
+function loadScript(url){
+  return new Promise(function(resolve,reject){
+    var s=document.createElement('script');
+    s.src=url;s.onload=resolve;s.onerror=reject;
+    document.head.appendChild(s);
+  });
+}
+function loadImage(src){
+  // Fetch via Vercel proxy to avoid CORS — proxy handles Pollinations server-side
+  return new Promise(function(resolve,reject){
+    fetch('https://8bfr-api.vercel.app/api/imgproxy?url='+encodeURIComponent(src))
+      .then(function(r){if(!r.ok)throw new Error('Proxy HTTP '+r.status);return r.blob();})
+      .then(function(blob){
+        var blobUrl=URL.createObjectURL(blob);
+        var img=new Image();
+        img.onload=function(){resolve(img);};
+        img.onerror=function(){reject(new Error('Image decode failed.'));};
+        img.src=blobUrl;
+      })
+      .catch(function(e){reject(new Error('Image load failed: '+e.message));});
+  });
+}
+
+// Asks the AI for a top/bottom caption + an image prompt, in a simple
+// line-based format (more reliable to parse than asking for JSON).
+var MEME_CRAFT_RULES = 'You are a viral meme writer. Follow these rules strictly, because most AI-written memes fail at them:\n'+
+  '1. The image and the caption must be ONE joke, not two ideas stapled together. Every visual detail you invent should be there because the caption needs it — never describe a generic scene and then bolt on an unrelated caption.\n'+
+  '2. Be SPECIFIC, not vague. "When you realize it\'s Monday" is dead. "When the group chat goes quiet after you send the venmo request" is alive. Specific, concrete, everyday details are what make a caption land — invent a real, particular situation, not a generic feeling.\n'+
+  '3. Keep it SHORT. Viral captions are almost never more than ~8-10 words per line. If it needs a paragraph to explain, it is not a meme.\n'+
+  '4. Pick ONE of these proven structures, whichever fits the idea best:\n'+
+  '   - Expectation vs. reality: top text sets up a confident assumption, bottom text (or the image) undercuts it.\n'+
+  '   - Deadpan mismatch: a completely over-the-top or absurd image, described in a flat, understated caption.\n'+
+  '   - Escalating relatability: one very specific everyday annoyance or habit, stated matter-of-factly, that everyone secretly recognizes.\n'+
+  '   - Confidently wrong: a caption stating something with total confidence that the image visually contradicts.\n'+
+  '5. Avoid tired, overused meme phrasing (e.g. generic "when you" setups with no real twist, "nobody: / me:" unless genuinely earned, vague "that feeling when"). If you use a familiar meme skeleton, fill it with a sharp, specific, unexpected detail — never a filler one.\n'+
+  '6. The image prompt must contain the exact subject/action the caption depends on — if the caption references a specific object, expression, or action, that MUST be in the image prompt in concrete visual terms.\n'+
+  '7. Funny > cute. Prioritize an actual joke with a punchline or twist over something merely "aww" or pleasant.\n';
+
+async function memeAskAI(instruction, tier){
+  var res = await fetch(API, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      input: MEME_CRAFT_RULES + '\nTask: ' + instruction + '\n\nRespond in EXACTLY this format, nothing else:\nTOP: <top caption, or blank if the joke only needs bottom text>\nBOTTOM: <bottom caption, or blank if the joke only needs top text>\nIMAGE: <concrete, specific visual description for an image generator — must contain the exact subject/action the caption depends on, no text/words in the image>',
+      tier: tier || 'mini'
+    })
+  });
+  var data = await res.json();
+  var text = (data && data.text) || '';
+  var top = (text.match(/TOP:\s*(.+)/i)||[])[1] || '';
+  var bottom = (text.match(/BOTTOM:\s*(.+)/i)||[])[1] || '';
+  var imagePrompt = (text.match(/IMAGE:\s*(.+)/i)||[])[1] || '';
+  return {
+    top: top.trim(),
+    bottom: bottom.trim(),
+    imagePrompt: imagePrompt.trim()
+  };
+}
+
+// QR fallback: Google Charts API (works without any JS library)
+async function qrCodeFallback(text, size, fg, bg) {
+  try {
+    // Google Charts QR doesn't support custom colors — use quickchart.io which does
+    var qrUrl = 'https://quickchart.io/qr?text=' + encodeURIComponent(text) +
+                '&size=' + size +
+                '&dark=' + fg.replace('#','') +
+                '&light=' + bg.replace('#','') +
+                '&ecLevel=H&margin=2';
+
+    // Fetch as blob so we can download it
+    var resp = await fetch(qrUrl);
+    if (!resp.ok) throw new Error('QR fallback failed');
+    var blob = await resp.blob();
+    var dataUrl = await new Promise(function(resolve){
+      var reader = new FileReader();
+      reader.onload = function(){ resolve(reader.result); };
+      reader.readAsDataURL(blob);
+    });
+
+    window._lastImageUrl = dataUrl;
+    showResult('<img src="' + dataUrl + '" alt="QR code" style="max-width:300px;background:#fff;padding:8px;border-radius:8px;">' +
+      '<div class="result-actions"><button class="btn btn-sm" onclick="downloadImage(\'qr-8bfr.png\')">⬇️ Download</button></div>' +
+      '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">' + size + '×' + size + ' • via QuickChart fallback</div>');
+  } catch (e) {
+    showError('QR generation failed: ' + e.message + '. Check that the text isn\'t too long.');
+  }
+}
+
+// ═══ TRANSLATOR (custom Google Translate-style UI) ═══
+var TR_LANGS=['Afrikaans','Albanian','Amharic','Arabic','Armenian','Azerbaijani','Basque','Belarusian','Bengali','Bosnian','Bulgarian','Catalan','Cebuano (Bisaya)','Chichewa','Chinese (Simplified)','Chinese (Traditional)','Corsican','Croatian','Czech','Danish','Dutch','English','Esperanto','Estonian','Filipino (Tagalog)','Finnish','French','Frisian','Galician','Georgian','German','Greek','Gujarati','Haitian Creole','Hausa','Hawaiian','Hebrew','Hindi','Hmong','Hungarian','Icelandic','Igbo','Ilocano','Indonesian','Irish','Italian','Japanese','Javanese','Kannada','Kazakh','Khmer','Kinyarwanda','Korean','Kurdish','Kyrgyz','Lao','Latin','Latvian','Lithuanian','Luxembourgish','Macedonian','Malagasy','Malay','Malayalam','Maltese','Maori','Marathi','Mongolian','Myanmar (Burmese)','Nepali','Norwegian','Odia','Pashto','Persian','Polish','Portuguese','Punjabi','Romanian','Russian','Samoan','Scots Gaelic','Serbian','Sesotho','Shona','Sindhi','Sinhala','Slovak','Slovenian','Somali','Spanish','Sundanese','Swahili','Swedish','Tajik','Tamil','Tatar','Telugu','Thai','Turkish','Turkmen','Ukrainian','Urdu','Uyghur','Uzbek','Vietnamese','Waray','Welsh','Xhosa','Yiddish','Yoruba','Zulu'];
+
+// Best-effort speech codes for common languages (browser TTS voice availability varies by device)
+var TR_SPEECH_CODES={'English':'en-US','Spanish':'es-ES','French':'fr-FR','German':'de-DE','Italian':'it-IT','Portuguese':'pt-PT','Japanese':'ja-JP','Korean':'ko-KR','Chinese (Simplified)':'zh-CN','Chinese (Traditional)':'zh-TW','Arabic':'ar-SA','Russian':'ru-RU','Hindi':'hi-IN','Turkish':'tr-TR','Dutch':'nl-NL','Polish':'pl-PL','Vietnamese':'vi-VN','Thai':'th-TH','Indonesian':'id-ID','Filipino (Tagalog)':'fil-PH','Greek':'el-GR','Swedish':'sv-SE','Danish':'da-DK','Norwegian':'no-NO','Finnish':'fi-FI','Hebrew':'he-IL','Ukrainian':'uk-UA','Czech':'cs-CZ','Romanian':'ro-RO','Hungarian':'hu-HU'};
+
+var trState={detected:'',reqId:0,timer:null};
+
+// Matches a loosely-worded AI-detected language name ("Cebuano", "Tagalog")
+// to our exact dropdown entry ("Cebuano (Bisaya)", "Filipino (Tagalog)").
+function trMatchLang(name){
+  if(!name)return '';
+  var n=name.trim().toLowerCase();
+  var exact=TR_LANGS.filter(function(l){return l.toLowerCase()===n;});
+  if(exact.length)return exact[0];
+  var partial=TR_LANGS.filter(function(l){return l.toLowerCase().indexOf(n)!==-1||n.indexOf(l.toLowerCase().split(' (')[0])!==-1;});
+  return partial.length?partial[0]:'';
+}
+
+function trInjectStyles(){
+  if(document.getElementById('trStyles'))return;
+  var css='.tr-wrap{display:flex;flex-direction:column;gap:0.6rem;}'+
+    '.tr-bar{display:flex;align-items:center;gap:0.5rem;}'+
+    '.tr-bar select{flex:1;min-width:0;padding:0.55rem 0.6rem;background:rgba(0,0,0,0.4);border:1px solid rgba(124,58,237,0.35);border-radius:8px;color:#eae6ff;font-size:0.85rem;outline:none;font-family:inherit;}'+
+    '.tr-bar select:focus{border-color:#a855f7;}'+
+    '.tr-swap{flex-shrink:0;width:38px;height:38px;border-radius:50%;background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.5);color:#eae6ff;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}'+
+    '.tr-swap:hover{background:#7c3aed;}'+
+    '.tr-detected{font-size:0.7rem;color:#00d9ff;padding:0 0.2rem;min-height:1rem;}'+
+    '.tr-panes{display:flex;flex-direction:column;gap:0.6rem;}'+
+    '@media(min-width:560px){.tr-panes{flex-direction:row;}}'+
+    '.tr-pane{flex:1;background:rgba(0,0,0,0.4);border:1px solid rgba(124,58,237,0.35);border-radius:10px;display:flex;flex-direction:column;min-height:140px;}'+
+    '.tr-pane textarea{flex:1;background:transparent;border:none;color:#eae6ff;font-size:0.95rem;padding:0.75rem;resize:vertical;min-height:120px;outline:none;font-family:inherit;}'+
+    '.tr-result{flex:1;padding:0.75rem;color:#eae6ff;font-size:0.95rem;white-space:pre-wrap;min-height:120px;overflow-y:auto;}'+
+    '.tr-result.tr-placeholder{color:rgba(234,230,255,0.4);}'+
+    '.tr-pane-footer{display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0.6rem;border-top:1px solid rgba(124,58,237,0.25);}'+
+    '.tr-pane-footer .tr-count{font-size:0.68rem;color:rgba(234,230,255,0.5);}'+
+    '.tr-icon-btn{background:none;border:none;color:rgba(234,230,255,0.7);font-size:0.95rem;cursor:pointer;padding:0.2rem 0.35rem;border-radius:6px;}'+
+    '.tr-icon-btn:hover{background:rgba(124,58,237,0.25);color:#eae6ff;}'+
+    '.tr-status{font-size:0.75rem;color:#a855f7;min-height:1rem;}';
+  var style=document.createElement('style');
+  style.id='trStyles';
+  style.textContent=css;
+  document.head.appendChild(style);
+}
+
+function trOptionsHtml(includeDetect,selected){
+  var html='';
+  if(includeDetect){
+    html+='<option value="Detect language"'+(selected==='Detect language'?' selected':'')+'>🔍 Detect language</option>';
+  }
+  TR_LANGS.forEach(function(l){
+    html+='<option value="'+l+'"'+(l===selected?' selected':'')+'>'+l+'</option>';
+  });
+  return html;
+}
+
+function buildTranslatorUI(){
+  trInjectStyles();
+  return ''+
+    '<div class="tr-wrap">'+
+      '<div class="tr-bar">'+
+        '<select id="trSrcLang">'+trOptionsHtml(true,'Detect language')+'</select>'+
+        '<button type="button" class="tr-swap" id="trSwap" title="Swap languages">⇄</button>'+
+        '<select id="trTgtLang">'+trOptionsHtml(false,'English')+'</select>'+
+      '</div>'+
+      '<div class="tr-detected" id="trDetected"></div>'+
+      '<div class="tr-panes">'+
+        '<div class="tr-pane">'+
+          '<textarea id="trSrcText" maxlength="5000" placeholder="Type text to translate..."></textarea>'+
+          '<div class="tr-pane-footer">'+
+            '<span class="tr-count" id="trSrcCount">0 / 5000</span>'+
+            '<div>'+
+              '<button type="button" class="tr-icon-btn" id="trSrcListen" title="Listen">🔊</button>'+
+              '<button type="button" class="tr-icon-btn" id="trSrcCopy" title="Copy">📋</button>'+
+              '<button type="button" class="tr-icon-btn" id="trSrcClear" title="Clear">✕</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="tr-pane">'+
+          '<div class="tr-result tr-placeholder" id="trTgtText">Translation</div>'+
+          '<div class="tr-pane-footer">'+
+            '<span class="tr-count">&nbsp;</span>'+
+            '<div>'+
+              '<button type="button" class="tr-icon-btn" id="trTgtListen" title="Listen">🔊</button>'+
+              '<button type="button" class="tr-icon-btn" id="trTgtCopy" title="Copy">📋</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="tr-status" id="trStatus"></div>'+
+    '</div>';
+}
+
+async function trCallApi(text,sourceLang,targetLang){
+  var instruction;
+  if(sourceLang==='Detect language'){
+    instruction='Detect the language of the following text, then translate it into '+targetLang+'. Respond in EXACTLY this format and nothing else:\nDETECTED: <detected language name>\nTRANSLATION: <translation only>\n\nText:\n'+text;
+  } else {
+    instruction='Translate the following text from '+sourceLang+' into '+targetLang+'. Preserve tone, meaning, and cultural nuance. Respond with ONLY the translation — no quotes, no labels, no extra commentary.\n\nText:\n'+text;
+  }
+  var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({input:instruction,tier:'nano'})});
+  var data=await res.json();
+  var raw=(data&&data.text)||'';
+  if(sourceLang==='Detect language'){
+    var det=(raw.match(/DETECTED:\s*(.+)/i)||[])[1]||'';
+    var trans=(raw.match(/TRANSLATION:\s*([\s\S]*)/i)||[])[1]||raw;
+    return {detected:det.trim(),translation:trans.trim()};
+  }
+  return {detected:'',translation:raw.trim()};
+}
+
+function trSpeak(text,langName){
+  if(!text)return;
+  speechSynthesis.cancel();
+  var utter=new SpeechSynthesisUtterance(text.substring(0,3000));
+  var code=TR_SPEECH_CODES[langName];
+  if(code)utter.lang=code;
+  speechSynthesis.speak(utter);
+}
+
+function initTranslatorUI(){
+  var srcLangEl=document.getElementById('trSrcLang');
+  var tgtLangEl=document.getElementById('trTgtLang');
+  var srcTextEl=document.getElementById('trSrcText');
+  var tgtTextEl=document.getElementById('trTgtText');
+  var countEl=document.getElementById('trSrcCount');
+  var detectedEl=document.getElementById('trDetected');
+  var statusEl=document.getElementById('trStatus');
+
+  trState.detected='';
+
+  function runTranslate(){
+    var text=srcTextEl.value.trim();
+    if(!text){
+      tgtTextEl.textContent='Translation';
+      tgtTextEl.classList.add('tr-placeholder');
+      detectedEl.textContent='';
+      statusEl.textContent='';
+      return;
+    }
+    var myReq=++trState.reqId;
+    statusEl.textContent='Translating...';
+    trCallApi(text,srcLangEl.value,tgtLangEl.value).then(function(res){
+      if(myReq!==trState.reqId)return; // a newer request superseded this one
+      tgtTextEl.textContent=res.translation||'(no translation returned)';
+      tgtTextEl.classList.remove('tr-placeholder');
+      if(res.detected){
+        trState.detected=res.detected;
+        detectedEl.textContent='Detected: '+res.detected;
+      } else {
+        detectedEl.textContent='';
+      }
+      statusEl.textContent='';
+    }).catch(function(e){
+      if(myReq!==trState.reqId)return;
+      statusEl.textContent='';
+      tgtTextEl.classList.remove('tr-placeholder');
+      tgtTextEl.textContent='⚠️ Translation failed: '+(e.message||e);
+    });
+  }
+
+  srcTextEl.addEventListener('input',function(){
+    countEl.textContent=srcTextEl.value.length+' / 5000';
+    clearTimeout(trState.timer);
+    trState.timer=setTimeout(runTranslate,600);
+  });
+
+  srcLangEl.addEventListener('change',function(){
+    detectedEl.textContent='';
+    runTranslate();
+  });
+  tgtLangEl.addEventListener('change',runTranslate);
+
+  document.getElementById('trSwap').addEventListener('click',function(){
+    var curSrc=srcLangEl.value;
+    var curTgt=tgtLangEl.value;
+    var newSrc=curTgt;
+    var newTgt=(curSrc==='Detect language')?(trMatchLang(trState.detected)||curTgt):curSrc;
+    if(TR_LANGS.indexOf(newTgt)===-1) newTgt='English'; // final safety fallback
+    srcLangEl.value=newSrc;
+    tgtLangEl.value=newTgt;
+    var oldTgtText=tgtTextEl.classList.contains('tr-placeholder')?'':tgtTextEl.textContent;
+    srcTextEl.value=oldTgtText;
+    countEl.textContent=srcTextEl.value.length+' / 5000';
+    detectedEl.textContent='';
+    runTranslate();
+  });
+
+  document.getElementById('trSrcClear').addEventListener('click',function(){
+    srcTextEl.value='';
+    countEl.textContent='0 / 5000';
+    tgtTextEl.textContent='Translation';
+    tgtTextEl.classList.add('tr-placeholder');
+    detectedEl.textContent='';
+    statusEl.textContent='';
+    srcTextEl.focus();
+  });
+
+  document.getElementById('trSrcCopy').addEventListener('click',function(){
+    if(!srcTextEl.value)return;
+    navigator.clipboard.writeText(srcTextEl.value);
+    statusEl.textContent='Source copied';
+    setTimeout(function(){statusEl.textContent='';},1200);
+  });
+  document.getElementById('trTgtCopy').addEventListener('click',function(){
+    var t=tgtTextEl.classList.contains('tr-placeholder')?'':tgtTextEl.textContent;
+    if(!t)return;
+    navigator.clipboard.writeText(t);
+    statusEl.textContent='Translation copied';
+    setTimeout(function(){statusEl.textContent='';},1200);
+  });
+
+  document.getElementById('trSrcListen').addEventListener('click',function(){
+    trSpeak(srcTextEl.value,srcLangEl.value==='Detect language'?trState.detected:srcLangEl.value);
+  });
+  document.getElementById('trTgtListen').addEventListener('click',function(){
+    var t=tgtTextEl.classList.contains('tr-placeholder')?'':tgtTextEl.textContent;
+    trSpeak(t,tgtLangEl.value);
+  });
+
+  countEl.textContent='0 / 5000';
+}
+
+// ═══ CLIENT-SIDE TOOL HANDLERS ═══
+var CLIENT_HANDLERS={
+
+  translate: async function(v){
+    // The translator has its own fully custom live UI (see buildTranslatorUI/initTranslatorUI)
+    // and doesn't use the standard Generate button — this exists only as a safe fallback.
+    showResult('<div class="tr-status">Use the boxes above — translation happens automatically as you type.</div>');
+  },
+
+  // ── ALBUM COVER ──
+  photoGen: async function(v){
+    var prompt=v.prompt||'', style=v.style||'Photorealistic';
+    // Build the list of sizes to generate
+    var sizes=[];
+    if(v.customSize){
+      var m=String(v.customSize).toLowerCase().replace(/\s/g,'').match(/^(\d{2,4})x(\d{2,4})$/);
+      if(!m){showError('Custom size must look like 1080x1350');return;}
+      sizes.push({label:'Custom',w:parseInt(m[1]),h:parseInt(m[2])});
+    } else if(v.platforms&&v.platforms.length){
+      sizes=v.platforms;
+    } else {
+      showError('Pick at least one platform size, or enter a custom size.');return;
+    }
+
+    // Owner + paid tiers: no watermark, HD. Free: watermark.
+    var noWatermark = isOwnerOrCoOwner || (window._userTier && window._userTier!=='free');
+
+    // Step 1: enhance the prompt once (reused for every size)
+    showLoading('Enhancing your prompt with AI...');
+    var imgPrompt=prompt+', '+style+' style';
+    try{
+      var aiRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({input:'Turn this into a concise vivid image-generation prompt (visual details only, no explanation): '+prompt+'. Style: '+style+'. Keep under 60 words.',tier:'nano'})});
+      var aiData=await aiRes.json();
+      if(aiData.text)imgPrompt=aiData.text.replace(/\n/g,' ').substring(0,400);
+    }catch(e){}
+
+    var results=[];
+    // Step 2: generate each size one at a time (Pollinations is sequential)
+    for(var i=0;i<sizes.length;i++){
+      var s=sizes[i];
+      showLoading('Generating '+s.label+' ('+(i+1)+' of '+sizes.length+')... '+s.w+'x'+s.h);
+      var seed=Math.floor(Math.random()*1000000);
+      var url='https://gen.pollinations.ai/image/'+encodeURIComponent(imgPrompt)+'?width='+s.w+'&height='+s.h+'&seed='+seed+'&nologo=true&key=sk_b1NWFqFFhwRpoa6IaDhn9qilGMcRl6r8';
+      try{
+        var img=await loadImage(url);
+        var canvas=document.createElement('canvas');
+        canvas.width=s.w;canvas.height=s.h;
+        var ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,s.w,s.h);
+        if(!noWatermark){
+          var fs=Math.max(14,Math.round(s.w*0.028));
+          ctx.font='bold '+fs+'px "Work Sans", sans-serif';
+          ctx.textAlign='right';
+          ctx.fillStyle='rgba(0,0,0,0.45)';ctx.fillText('8BFR.com',s.w-10+1,s.h-10+1);
+          ctx.fillStyle='rgba(255,255,255,0.85)';ctx.fillText('8BFR.com',s.w-10,s.h-10);
+        }
+        results.push({label:s.label,w:s.w,h:s.h,data:canvas.toDataURL('image/png')});
+      }catch(e){
+        results.push({label:s.label,w:s.w,h:s.h,error:true});
+      }
+    }
+
+    // Step 3: show them all with individual download buttons
+    window._pgResults=results;
+    var html='<div style="display:flex;flex-direction:column;gap:1rem;">';
+    results.forEach(function(r,idx){
+      if(r.error){
+        html+='<div style="padding:.75rem;border:1px solid rgba(239,68,68,.3);border-radius:10px;color:#fca5a5;font-size:.8rem;">'+r.label+' ('+r.w+'x'+r.h+') failed - tap Create Again to retry.</div>';
+      } else {
+        html+='<div style="border:1px solid rgba(124,58,237,.3);border-radius:12px;overflow:hidden;">'+
+          '<div style="padding:.5rem .75rem;font-size:.82rem;font-weight:700;color:#c084fc;background:rgba(124,58,237,.12);">'+r.label+' - '+r.w+'x'+r.h+'</div>'+
+          '<img src="'+r.data+'" style="width:100%;display:block;" alt="'+r.label+'">'+
+          '<div style="padding:.5rem;"><button class="btn btn-sm" onclick="downloadPgImage('+idx+')">\u2B07\uFE0F Download '+r.label+'</button></div>'+
+          '</div>';
+      }
+    });
+    html+='</div>';
+    if(results.filter(function(r){return !r.error;}).length>1){
+      html='<button class="btn btn-sm" style="margin-bottom:.75rem;width:100%;" onclick="downloadAllPg()">\u2B07\uFE0F Download All ('+results.filter(function(r){return !r.error;}).length+')</button>'+html;
+    }
+    if(!noWatermark){
+      html+='<div style="font-size:.72rem;color:#fbbf24;margin-top:.5rem;text-align:center;">Free tier images include an 8BFR watermark. Upgrade to VIP+ for clean HD downloads.</div>';
+    }
+    showResult(html);
+  },
+
+  albumCover: async function(v){
+    var artist=v.artist||'',title=v.title||'',featured=v.featured||'',pos=v.textPos||'bottom',prompt=v.prompt||'';
+    showLoading('Step 1: Enhancing prompt with AI...');
+
+    // Step 1: ask AI to enhance prompt
+    var imgPrompt=prompt;
+    try {
+      var aiRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({input:'Create a concise vivid image generation prompt (visual only, no explanation) for an album cover: '+prompt+'. Artist: '+artist+(title?' Title: '+title:'')+'. Make it cinematic.',tier:'nano'})});
+      var aiData=await aiRes.json();
+      if(aiData.text)imgPrompt=aiData.text.replace(/\n/g,' ').substring(0,400);
+    } catch(e){/* use original prompt */}
+
+    showLoading('Step 2: Generating image (15-30s)...');
+    var polUrl='https://gen.pollinations.ai/image/'+(imgPrompt+', album cover art, high quality, professional, square').replace(/[^a-zA-Z0-9 ,.-]/g,'')+'?width=1024&height=1024&nologo=true&key=sk_b1NWFqFFhwRpoa6IaDhn9qilGMcRl6r8';
+
+    var img=await loadImage(polUrl);
+    var canvas=document.createElement('canvas');
+    canvas.width=1024;canvas.height=1024;
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,1024,1024);
+
+    // ── BACKGROUND EFFECTS ──
+    var bgFx=v.bgFx||'none';
+    if(bgFx==='dark overlay'){
+      ctx.fillStyle='rgba(0,0,0,0.45)';ctx.fillRect(0,0,1024,1024);
+    } else if(bgFx==='vignette'){
+      var vig=ctx.createRadialGradient(512,512,200,512,512,720);
+      vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,'rgba(0,0,0,0.75)');
+      ctx.fillStyle=vig;ctx.fillRect(0,0,1024,1024);
+    } else if(bgFx==='film grain'){
+      var gd=ctx.getImageData(0,0,1024,1024);
+      for(var gi=0;gi<gd.data.length;gi+=4){var gr=Math.random()*40-20;gd.data[gi]+=gr;gd.data[gi+1]+=gr;gd.data[gi+2]+=gr;}
+      ctx.putImageData(gd,0,0);
+    } else if(bgFx==='scanlines'){
+      ctx.fillStyle='rgba(0,0,0,0.18)';
+      for(var sl=0;sl<1024;sl+=4){ctx.fillRect(0,sl,1024,2);}
+    } else if(bgFx==='color burn'){
+      ctx.fillStyle='rgba(80,0,120,0.35)';ctx.fillRect(0,0,1024,1024);
+    } else if(bgFx==='glitch tint'){
+      ctx.fillStyle='rgba(0,255,200,0.08)';ctx.fillRect(0,0,1024,1024);
+      ctx.fillStyle='rgba(255,0,80,0.08)';ctx.fillRect(6,0,1024,1024);
+    } else if(bgFx==='holographic shimmer'){
+      var holo=ctx.createLinearGradient(0,0,1024,1024);
+      holo.addColorStop(0,'rgba(255,0,128,0.12)');holo.addColorStop(0.33,'rgba(0,255,255,0.12)');
+      holo.addColorStop(0.66,'rgba(128,0,255,0.12)');holo.addColorStop(1,'rgba(255,200,0,0.12)');
+      ctx.fillStyle=holo;ctx.fillRect(0,0,1024,1024);
+    }
+
+    // ── TEXT RENDERING ──
+    if(pos!=='none'&&(artist||title)){
+      var style=v.textStyle||'Classic White';
+      var isSplit=pos.indexOf('split')!==-1;
+
+      function applyTextStyle(ctx,text,x,y,size,style,role){
+        ctx.textAlign='center';
+        ctx.font='bold '+size+'px "Bebas Neue", Impact, sans-serif';
+        if(role==='featured') ctx.font=Math.round(size*.55)+'px "Work Sans", sans-serif';
+
+        if(style==='Classic White'){
+          ctx.strokeStyle='rgba(0,0,0,0.8)';ctx.lineWidth=4;ctx.lineJoin='round';
+          ctx.strokeText(text,x,y);ctx.fillStyle='#ffffff';ctx.fillText(text,x,y);
+        } else if(style==='3D Shadow'){
+          for(var d=6;d>0;d--){ctx.fillStyle='rgba(0,0,0,'+(d*.07)+')';ctx.fillText(text,x+d,y+d);}
+          ctx.fillStyle='#ffffff';ctx.fillText(text,x,y);
+        } else if(style==='Neon Glow'){
+          ctx.shadowColor='#a855f7';ctx.shadowBlur=20;
+          ctx.strokeStyle='#a855f7';ctx.lineWidth=2;ctx.strokeText(text,x,y);
+          ctx.shadowBlur=35;ctx.fillStyle='#ffffff';ctx.fillText(text,x,y);
+          ctx.shadowBlur=0;ctx.shadowColor='transparent';
+        } else if(style==='Gold Metallic'){
+          var grd=ctx.createLinearGradient(x-200,y-size,x+200,y);
+          grd.addColorStop(0,'#b8860b');grd.addColorStop(0.4,'#ffd700');
+          grd.addColorStop(0.6,'#fffacd');grd.addColorStop(1,'#b8860b');
+          ctx.strokeStyle='#4a3000';ctx.lineWidth=3;ctx.strokeText(text,x,y);
+          ctx.fillStyle=grd;ctx.fillText(text,x,y);
+        } else if(style==='Chrome'){
+          var crd=ctx.createLinearGradient(x,y-size,x,y);
+          crd.addColorStop(0,'#ffffff');crd.addColorStop(0.3,'#aaaaaa');
+          crd.addColorStop(0.6,'#ffffff');crd.addColorStop(1,'#555555');
+          ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.strokeText(text,x,y);
+          ctx.fillStyle=crd;ctx.fillText(text,x,y);
+        } else if(style==='Graffiti Outline'){
+          ctx.lineWidth=8;ctx.lineJoin='round';ctx.strokeStyle='#000000';ctx.strokeText(text,x,y);
+          ctx.lineWidth=3;ctx.strokeStyle='#ffff00';ctx.strokeText(text,x,y);
+          ctx.fillStyle='#ff2200';ctx.fillText(text,x,y);
+        } else if(style==='Blood Drip'){
+          ctx.fillStyle='#8b0000';ctx.fillText(text,x+3,y+3);
+          ctx.fillStyle='#cc0000';ctx.fillText(text,x,y);
+          // drip dots
+          ctx.fillStyle='#aa0000';
+          for(var dd=0;dd<text.length*2;dd++){
+            ctx.beginPath();
+            ctx.arc(x-ctx.measureText(text).width/2+Math.random()*ctx.measureText(text).width,
+              y+8+Math.random()*20,1+Math.random()*3,0,Math.PI*2);
+            ctx.fill();
+          }
+        } else if(style==='Fire'){
+          ctx.shadowColor='#ff6600';ctx.shadowBlur=18;
+          ctx.fillStyle='#ffcc00';ctx.fillText(text,x,y);
+          ctx.shadowColor='#ff0000';ctx.shadowBlur=8;
+          ctx.fillStyle='#ff4400';ctx.fillText(text,x,y+2);
+          ctx.shadowBlur=0;ctx.shadowColor='transparent';
+        } else if(style==='Ice Blue'){
+          ctx.shadowColor='#00cfff';ctx.shadowBlur=15;
+          ctx.strokeStyle='#003366';ctx.lineWidth=3;ctx.strokeText(text,x,y);
+          var ird=ctx.createLinearGradient(x,y-size,x,y);
+          ird.addColorStop(0,'#ffffff');ird.addColorStop(0.5,'#aaeeff');ird.addColorStop(1,'#0088cc');
+          ctx.fillStyle=ird;ctx.fillText(text,x,y);
+          ctx.shadowBlur=0;ctx.shadowColor='transparent';
+        } else if(style==='Vintage Stamp'){
+          ctx.globalAlpha=0.92;
+          ctx.strokeStyle='#8b6914';ctx.lineWidth=5;ctx.strokeText(text,x,y);
+          ctx.fillStyle='#c8a951';ctx.fillText(text,x,y);
+          ctx.globalAlpha=1;
+        }
+      }
+
+      if(isSplit){
+        // Artist at top, title in center, featured at bottom
+        if(artist){
+          ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,0,1024,110);
+          applyTextStyle(ctx,artist.toUpperCase(),512,75,62,style,'artist');
+        }
+        if(title){
+          ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(0,437,1024,150);
+          applyTextStyle(ctx,title.toUpperCase(),512,530,56,style,'title');
+        }
+        if(featured){
+          ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,914,1024,110);
+          applyTextStyle(ctx,'feat. '+featured,512,970,32,style,'featured');
+        }
+      } else {
+        var barHeight=featured?190:(title?150:100);
+        var barY=pos==='top'?0:pos==='center'?(1024-barHeight)/2:1024-barHeight;
+        ctx.fillStyle='rgba(0,0,0,0.52)';ctx.fillRect(0,barY,1024,barHeight);
+        var textY=barY+68;
+        if(artist){applyTextStyle(ctx,artist.toUpperCase(),512,textY,64,style,'artist');}
+        if(title){textY+=58;applyTextStyle(ctx,title.toUpperCase(),512,textY,42,style,'title');}
+        if(featured){textY+=44;applyTextStyle(ctx,'feat. '+featured,512,textY,30,style,'featured');}
+      }
+    }
+
+    var dataUrl=canvas.toDataURL('image/png');
+    window._lastImageUrl=dataUrl;
+    showResult('<img src="'+dataUrl+'" alt="Album cover">'+
+      '<div class="result-actions">'+
+      '<button class="btn btn-sm" onclick="downloadImage(\'album-cover-8bfr.png\')">⬇️ Download</button>'+
+      '<button class="btn btn-ghost btn-sm" onclick="runTool()">🔄 Try Again</button>'+
+      '</div>'+
+      '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">Enhanced prompt: '+esc(imgPrompt)+'</div>');
+  },
+
+  // ── QR CODE ──
+  // ── QR CODE (uses node-qrcode library, reliable) ──
+  qrCode: async function(v){
+    var text = v.text;
+    var size = parseInt(v.size) || 300;
+    var fg = v.fg || '#000000';
+    var bg = v.bg || '#ffffff';
+
+    if (!text) { showError('Enter a URL or text.'); return; }
+
+    showLoading('Generating QR code...');
+
+    // Load node-qrcode library (more reliable than qrcodejs)
+    if (!window.QRCode || !window.QRCode.toCanvas) {
+      try {
+        await loadScript('https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js');
+      } catch(e) {
+        // Fallback: use Google Charts API to render QR
+        await qrCodeFallback(text, size, fg, bg);
+        return;
+      }
+    }
+
+    try {
+      var canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+
+      await new Promise(function(resolve, reject){
+        var timeout = setTimeout(function(){ reject(new Error('QR generation timed out')); }, 10000);
+        window.QRCode.toCanvas(canvas, text, {
+          width: size,
+          margin: 2,
+          color: { dark: fg, light: bg },
+          errorCorrectionLevel: 'H'
+        }, function(err){
+          clearTimeout(timeout);
+          if (err) reject(err); else resolve();
+        });
+      });
+
+      var dataUrl = canvas.toDataURL('image/png');
+      window._lastImageUrl = dataUrl;
+
+      showResult('<img src="' + dataUrl + '" alt="QR code" style="max-width:300px;background:#fff;padding:8px;border-radius:8px;">' +
+        '<div class="result-actions"><button class="btn btn-sm" onclick="downloadImage(\'qr-8bfr.png\')">⬇️ Download</button></div>' +
+        '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">' + size + '×' + size + ' • PNG</div>');
+    } catch(err) {
+      console.warn('QRCode.toCanvas failed, using fallback:', err.message);
+      await qrCodeFallback(text, size, fg, bg);
+    }
+  },
+
+  // ── MEME ──
+  meme: async function(v){
+    var img;
+    var mode = v.mode || 'AI generates the image (I write the text)';
+    var files = v.image;
+    var aiPrompt = (v.aiPrompt||'').trim();
+    var topText = v.top||'';
+    var bottomText = v.bottom||'';
+    var MEME_KEY = '&key=sk_b1NWFqFFhwRpoa6IaDhn9qilGMcRl6r8'; // required by Pollinations proxy — missing this caused "Proxy HTTP 400"
+    var isOwner = (typeof isOwnerOrCoOwner!=='undefined') && !!isOwnerOrCoOwner;
+    var memeTier = isOwner ? 'mini' : 'nano'; // owner gets the smarter (pricier) writer; everyone else uses the cheaper one
+
+    if(mode === 'Upload my own image'){
+      if(!(files&&files[0])){ showError('Upload an image for this mode.'); return; }
+      var objUrl=URL.createObjectURL(files[0]);
+      img=new Image();
+      await new Promise(function(r,rej){img.onload=r;img.onerror=function(){rej(new Error("Image load failed — try again."));};img.src=objUrl;});
+
+    } else if(mode === 'Give AI an idea — it writes image + viral caption'){
+      if(!aiPrompt){ showError('Type your meme idea first.'); return; }
+      showLoading('AI is writing your viral caption...');
+      var concept = await memeAskAI('Turn this idea into a viral meme concept: "'+aiPrompt+'". Make the caption genuinely funny, punchy, and shareable — the kind of meme that gets reposted.', memeTier);
+      if(!topText) topText = concept.top;
+      if(!bottomText) bottomText = concept.bottom;
+      var imgPrompt = concept.imagePrompt || (aiPrompt+', meme format, funny');
+      showLoading('AI generating meme image...');
+      var url=IMG_GEN+encodeURIComponent(imgPrompt+', meme format, funny, no text, no words')+'?width=800&height=800&nologo=true&seed='+Math.floor(Math.random()*1000000)+MEME_KEY;
+      img=await loadImage(url);
+
+    } else if(mode === 'Surprise me — totally random AI meme'){
+      showLoading('AI is inventing a random meme...');
+      var concept=await memeAskAI('Invent a completely random, absurdly funny meme concept from scratch — pick any relatable everyday situation, animal, or pop-culture-style scenario (no real people or logos). Make it something that could genuinely go viral.', memeTier);
+      if(!topText) topText = concept.top;
+      if(!bottomText) bottomText = concept.bottom;
+      var imgPrompt = concept.imagePrompt || 'random funny relatable meme scene';
+      showLoading('AI generating meme image...');
+      var url=IMG_GEN+encodeURIComponent(imgPrompt+', meme format, funny, no text, no words')+'?width=800&height=800&nologo=true&seed='+Math.floor(Math.random()*1000000)+MEME_KEY;
+      img=await loadImage(url);
+
+    } else if(aiPrompt){
+      // Mode 2: AI generates image from description, user supplies text
+      showLoading('AI generating meme image...');
+      var url=IMG_GEN+encodeURIComponent(aiPrompt+', meme format, funny, no text, no words')+'?width=800&height=800&nologo=true&seed='+Math.floor(Math.random()*1000000)+MEME_KEY;
+      img=await loadImage(url);
+    } else if(files&&files[0]){
+      var url=URL.createObjectURL(files[0]);
+      img=new Image();
+      await new Promise(function(r,rej){img.onload=r;img.onerror=function(){rej(new Error("Image load failed — try again."));};img.src=url;});
+    } else {
+      showError('Upload an image or enter an AI prompt.');return;
+    }
+
+    var canvas=document.createElement('canvas');
+    canvas.width=img.width;canvas.height=img.height;
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0);
+    var fontSize=parseInt(v.fontSize)||80;
+    ctx.font='bold '+fontSize+'px Impact, sans-serif';
+    ctx.textAlign='center';
+    ctx.fillStyle=v.color||'#ffffff';
+    ctx.strokeStyle=v.outline||'#000000';
+    ctx.lineWidth=Math.max(3,fontSize/8);
+    ctx.lineJoin='round';
+    function wrapLines(ctx,text,maxW){
+      var words=text.split(' '),lines=[],current='';
+      words.forEach(function(w){
+        var test=current?current+' '+w:w;
+        if(ctx.measureText(test).width>maxW&&current){lines.push(current);current=w;}
+        else current=test;
+      });
+      if(current)lines.push(current);
+      return lines;
+    }
+    if(topText){
+      var lines=wrapLines(ctx,topText.toUpperCase(),canvas.width-40);
+      lines.forEach(function(line,i){
+        var y=fontSize+10+i*(fontSize+8);
+        ctx.strokeText(line,canvas.width/2,y);
+        ctx.fillText(line,canvas.width/2,y);
+      });
+    }
+    if(bottomText){
+      var lines=wrapLines(ctx,bottomText.toUpperCase(),canvas.width-40);
+      var startY=canvas.height-(lines.length*(fontSize+8))-10+fontSize;
+      lines.forEach(function(line,i){
+        var y=startY+i*(fontSize+8);
+        ctx.strokeText(line,canvas.width/2,y);
+        ctx.fillText(line,canvas.width/2,y);
+      });
+    }
+    var watermark=isOwner?(v.watermark||'').trim():'8bfr.com';
+    if(watermark){
+      var wmSize=Math.max(14,Math.round(canvas.width*0.028));
+      ctx.font=wmSize+'px sans-serif';
+      ctx.textAlign='right';
+      ctx.lineWidth=Math.max(2,wmSize/8);
+      ctx.strokeStyle='rgba(0,0,0,0.65)';
+      ctx.fillStyle='rgba(255,255,255,0.85)';
+      var wmText='© '+watermark;
+      var wmX=canvas.width-14;
+      var wmY=canvas.height-14;
+      ctx.strokeText(wmText,wmX,wmY);
+      ctx.fillText(wmText,wmX,wmY);
+    }
+    var dataUrl=canvas.toDataURL('image/png');
+    window._lastImageUrl=dataUrl;
+    showResult('<img src="'+dataUrl+'" alt="Meme">'+
+      '<div class="result-actions">'+
+      '<button class="btn btn-sm" onclick="downloadImage(\'meme-8bfr.png\')">Download</button>'+
+      '<button class="btn btn-ghost btn-sm" onclick="runTool()">Try Again</button>'+
+      '</div>');
+  },
+
+  // ── GIF (uses web worker from same CDN for reliability) ──
+  gif: async function(v){
+    var files=v.images;
+    var aiPrompt=(v.aiPrompt||'').trim();
+    var delay=parseInt(v.delay)||500;
+    var width=parseInt(v.width)||480;
+    var imgs=[];
+
+    if(aiPrompt){
+      // AI generate frames
+      var numFrames=Math.min(parseInt(v.aiFrames)||6,10);
+      showLoading('AI generating '+numFrames+' frames...');
+      for(var f=0;f<numFrames;f++){
+        showLoading('Generating frame '+(f+1)+'/'+numFrames+'...');
+        var framePrompt=aiPrompt+', frame '+(f+1)+' of '+numFrames+' animation sequence, step '+(f+1)+', no text';
+        var url=IMG_GEN+encodeURIComponent(framePrompt)+'?width='+width+'&height='+width+'&nologo=true&seed='+(Date.now()+f*100);
+        try{var img=await loadImage(url);imgs.push(img);}catch(e){showError('Frame '+(f+1)+' failed.');return;}
+      }
+    } else if(files&&files.length>=2){
+      showLoading('Loading '+files.length+' frames...');
+      for(var i=0;i<files.length;i++){
+        var url=URL.createObjectURL(files[i]);
+        var img=new Image();
+        await new Promise(function(r,rej){img.onload=r;img.onerror=function(){rej(new Error("Image load failed — try again."));};img.src=url;});
+        imgs.push(img);
+      }
+    } else {
+      showError('Upload at least 2 images or enter an AI prompt.');return;
+    }
+    // Calculate height from first image
+    var ratio=imgs[0].height/imgs[0].width;
+    var height=Math.round(width*ratio);
+
+    // Load gif.js from a reliable CDN
+    if(!window.GIF){
+      try{
+        await loadScript('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
+      } catch(e){
+        showError('Could not load GIF library. Check your internet connection.');
+        return;
+      }
+    }
+
+    showLoading('Encoding GIF frames...');
+
+    // gif.js requires a worker script - use blob URL to avoid CORS
+    var workerScriptUrl = 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
+
+    // Try to fetch worker script as text and create blob URL (avoids CORS)
+    var workerBlobUrl = null;
+    try {
+      var workerRes = await fetch(workerScriptUrl);
+      if (workerRes.ok) {
+        var workerText = await workerRes.text();
+        var workerBlob = new Blob([workerText], {type: 'application/javascript'});
+        workerBlobUrl = URL.createObjectURL(workerBlob);
+      }
+    } catch(e){
+      console.warn('Worker fetch failed, using direct URL:', e.message);
+    }
+
+    var gif = new GIF({
+      workers: 2,
+      quality: 10,
+      width: width,
+      height: height,
+      workerScript: workerBlobUrl || workerScriptUrl
+    });
+
+    for(var i=0;i<imgs.length;i++){
+      var canvas=document.createElement('canvas');
+      canvas.width=width;canvas.height=height;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(imgs[i],0,0,width,height);
+      gif.addFrame(canvas,{delay:delay,copy:true});
+    }
+
+    await new Promise(function(resolve,reject){
+      var timeout = setTimeout(function(){
+        reject(new Error('GIF encoding timed out after 60s. Try fewer/smaller frames.'));
+      }, 60000);
+
+      gif.on('finished', function(blob){
+        clearTimeout(timeout);
+        if (workerBlobUrl) URL.revokeObjectURL(workerBlobUrl);
+        var url = URL.createObjectURL(blob);
+        window._lastBlobUrl = url;
+        window._lastBlob = blob;
+        showResult('<img src="' + url + '" alt="GIF">' +
+          '<div class="result-actions">' +
+          '<button class="btn btn-sm" onclick="downloadBlob(\'animation-8bfr.gif\')">⬇️ Download GIF</button>' +
+          '</div>' +
+          '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">' + width + '×' + height + ' • ' + files.length + ' frames • ' + (blob.size/1024).toFixed(1) + ' KB</div>');
+        resolve();
+      });
+
+      gif.on('abort', function(){
+        clearTimeout(timeout);
+        reject(new Error('GIF encoding aborted'));
+      });
+
+      try {
+        gif.render();
+      } catch(e) {
+        clearTimeout(timeout);
+        reject(e);
+      }
+    });
+  },
+
+  // ── IMAGE RESIZER ──
+  resizer: async function(v){
+    var files=v.image;
+    if(!files||!files[0]){showError('Upload an image first.');return;}
+    var w=parseInt(v.w)||parseInt(document.getElementById('resizeW').value);
+    var h=parseInt(v.h)||parseInt(document.getElementById('resizeH').value);
+    if(!w||!h){showError('Pick a preset or enter width and height.');return;}
+
+    showLoading('Resizing...');
+    var url=URL.createObjectURL(files[0]);
+    var img=new Image();
+    await new Promise(function(r,rej){img.onload=r;img.onerror=function(){rej(new Error("Image load failed — try again."));};img.src=url;});
+    var canvas=document.createElement('canvas');
+    canvas.width=w;canvas.height=h;
+    var ctx=canvas.getContext('2d');
+    // Cover-fit: fill entire canvas, crop overflow
+    var srcRatio=img.width/img.height,dstRatio=w/h;
+    var sx=0,sy=0,sw=img.width,sh=img.height;
+    if(srcRatio>dstRatio){sw=img.height*dstRatio;sx=(img.width-sw)/2;}
+    else {sh=img.width/dstRatio;sy=(img.height-sh)/2;}
+    ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+    var dataUrl=canvas.toDataURL('image/png');
+    window._lastImageUrl=dataUrl;
+    // Get size
+    var byteStr=atob(dataUrl.split(',')[1]);
+    showResult('<img src="'+dataUrl+'" alt="Resized">'+
+      '<div class="result-actions">'+
+      '<button class="btn btn-sm" onclick="downloadImage(\'resized-'+w+'x'+h+'.png\')">⬇️ Download</button>'+
+      '</div>'+
+      '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">Resized to '+w+'×'+h+' • '+(byteStr.length/1024).toFixed(1)+' KB</div>');
+  },
+
+  // ── IMAGE CONVERTER ──
+  converter: async function(v){
+    var files=v.image;
+    if(!files||!files[0]){showError('Upload an image first.');return;}
+    var fmt=(v.format||'png').toLowerCase();
+    var quality=(parseInt(v.quality)||90)/100;
+    var scale=(parseInt(v.scale)||100)/100;
+
+    showLoading('Converting...');
+    var url=URL.createObjectURL(files[0]);
+    var img=new Image();
+    await new Promise(function(r,rej){img.onload=r;img.onerror=function(){rej(new Error("Image load failed — try again."));};img.src=url;});
+    var canvas=document.createElement('canvas');
+    canvas.width=Math.round(img.width*scale);
+    canvas.height=Math.round(img.height*scale);
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    var mime=fmt==='jpeg'?'image/jpeg':fmt==='webp'?'image/webp':'image/png';
+    var ext=fmt==='jpeg'?'jpg':fmt;
+    var blob=await new Promise(function(r){canvas.toBlob(r,mime,quality);});
+    var outUrl=URL.createObjectURL(blob);
+    window._lastBlobUrl=outUrl;
+    window._lastBlob=blob;
+    showResult('<img src="'+outUrl+'" alt="Converted">'+
+      '<div class="result-actions">'+
+      '<button class="btn btn-sm" onclick="downloadBlob(\'converted.'+ext+'\')">⬇️ Download</button>'+
+      '</div>'+
+      '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">'+ext.toUpperCase()+' • '+canvas.width+'×'+canvas.height+' • '+(blob.size/1024).toFixed(1)+' KB</div>');
+  },
+
+  // ── AUDIO EXTRACTOR ──
+  audioExtract: async function(v){
+    var files=v.video;
+    if(!files||!files[0]){showError('Upload a video first.');return;}
+    var fmt=v.format||'wav';
+
+    showLoading('Extracting audio (may take a moment)...');
+    var arrayBuffer=await files[0].arrayBuffer();
+    var audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    var audioBuffer;
+    try {
+      audioBuffer=await audioContext.decodeAudioData(arrayBuffer);
+    } catch(e){
+      showError('Could not decode audio from this video. MP4 and WebM formats work best.');
+      return;
+    }
+
+    var blob;
+    if(fmt==='wav'){
+      blob=audioBufferToWav(audioBuffer);
+    } else {
+      // WebM - use a fresh approach: render to offline context and MediaRecorder
+      try {
+        blob=await audioBufferToWebm(audioBuffer);
+      } catch(e){
+        // Fall back to WAV
+        blob=audioBufferToWav(audioBuffer);
+        fmt='wav';
+      }
+    }
+    var url=URL.createObjectURL(blob);
+    window._lastBlobUrl=url;
+    window._lastBlob=blob;
+    showResult('<audio src="'+url+'" controls style="width:100%;"></audio>'+
+      '<div class="result-actions">'+
+      '<button class="btn btn-sm" onclick="downloadBlob(\'audio-8bfr.'+fmt+'\')">⬇️ Download</button>'+
+      '</div>'+
+      '<div style="font-size:0.75rem;color:rgba(168,85,247,0.7);margin-top:0.5rem;">'+fmt.toUpperCase()+' • '+(blob.size/(1024*1024)).toFixed(2)+' MB</div>');
+  },
+
+  // ── VIDEO TRIMMER (simple - uses HTMLVideoElement + MediaRecorder) ──
+  videoCut: async function(v){
+    var files=v.video;
+    if(!files||!files[0]){showError('Upload a video first.');return;}
+
+    showLoading('Loading video...');
+    var videoUrl=URL.createObjectURL(files[0]);
+    var video=document.createElement('video');
+    video.src=videoUrl;
+    video.muted=false;
+    video.playsInline=true;
+    await new Promise(function(r,rej){video.onloadedmetadata=r;video.onerror=rej;});
+    var dur=video.duration;
+
+    // Show visual timeline UI
+    showResult(
+      '<video id="trimPreview" src="'+videoUrl+'" controls playsinline style="width:100%;border-radius:8px;margin-bottom:.5rem;"></video>'+
+      '<div style="padding:.5rem 0;">'+
+      '<div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-bottom:.3rem;">Drag sliders to select the part to keep:</div>'+
+      '<div style="position:relative;height:40px;background:rgba(0,0,0,.3);border-radius:8px;overflow:hidden;margin-bottom:.3rem;">'+
+        '<div id="trimHighlight" style="position:absolute;top:0;bottom:0;background:rgba(124,58,237,.3);border:2px solid #a855f7;border-radius:6px;"></div>'+
+        '<input type="range" id="trimStartR" min="0" max="'+dur.toFixed(1)+'" step="0.1" value="0" style="position:absolute;top:0;left:0;right:0;height:40px;opacity:.5;pointer-events:auto;-webkit-appearance:none;background:transparent;">'+
+        '<input type="range" id="trimEndR" min="0" max="'+dur.toFixed(1)+'" step="0.1" value="'+dur.toFixed(1)+'" style="position:absolute;top:0;left:0;right:0;height:40px;opacity:.5;pointer-events:auto;-webkit-appearance:none;background:transparent;">'+
+      '</div>'+
+      '<div style="display:flex;justify-content:space-between;font-size:.72rem;">'+
+        '<span>Start: <b id="trimSV">0.0</b>s</span>'+
+        '<span>Duration: <b id="trimDV">'+dur.toFixed(1)+'</b>s</span>'+
+        '<span>End: <b id="trimEV">'+dur.toFixed(1)+'</b>s</span>'+
+      '</div>'+
+      '</div>'+
+      '<button class="btn btn-primary" onclick="doTrim()" style="margin-top:.3rem;">Trim Video</button>'
+    );
+
+    // Wire up sliders
+    var rs=document.getElementById('trimStartR');
+    var re=document.getElementById('trimEndR');
+    var hl=document.getElementById('trimHighlight');
+    function updateHL(){
+      var s=parseFloat(rs.value),e=parseFloat(re.value);
+      if(e<s){re.value=s;e=s;}
+      var pctL=(s/dur)*100,pctR=(e/dur)*100;
+      hl.style.left=pctL+'%';hl.style.width=(pctR-pctL)+'%';
+      document.getElementById('trimSV').textContent=s.toFixed(1);
+      document.getElementById('trimEV').textContent=e.toFixed(1);
+      document.getElementById('trimDV').textContent=(e-s).toFixed(1);
+    }
+    rs.oninput=function(){updateHL();document.getElementById('trimPreview').currentTime=parseFloat(rs.value);};
+    re.oninput=function(){updateHL();document.getElementById('trimPreview').currentTime=parseFloat(re.value);};
+    updateHL();
+
+    // Trim function
+    window.doTrim=async function(){
+      var start=parseFloat(rs.value),end=parseFloat(re.value);
+      if(end<=start){showError('End must be after start.');return;}
+      showLoading('Trimming '+(end-start).toFixed(1)+'s of video...');
+      var tv=document.createElement('video');tv.src=videoUrl;tv.muted=true;
+      await new Promise(function(r){tv.onloadedmetadata=r;});
+      var canvas=document.createElement('canvas');
+      canvas.width=tv.videoWidth;canvas.height=tv.videoHeight;
+      var ctx=canvas.getContext('2d');
+      var cs=canvas.captureStream(30);
+      try{var ac=new(window.AudioContext||window.webkitAudioContext)();var src=ac.createMediaElementSource(tv);var dest=ac.createMediaStreamDestination();src.connect(dest);src.connect(ac.destination);dest.stream.getAudioTracks().forEach(function(t){cs.addTrack(t);});}catch(e){}
+      var chunks=[];var rec=new MediaRecorder(cs,{mimeType:'video/webm'});
+      rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      var done;var dp=new Promise(function(r){done=r;});
+      rec.onstop=function(){var blob=new Blob(chunks,{type:'video/webm'});var url=URL.createObjectURL(blob);window._lastBlobUrl=url;window._lastBlob=blob;showResult('<video src="'+url+'" controls style="width:100%;border-radius:8px;"></video><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\x27trimmed-8bfr.webm\x27)">Download</button><button class="btn btn-sm" onclick="convertToMp4(window._lastBlob,\x27trimmed-8bfr.mp4\x27)" style="margin-left:.2rem;">MP4</button></div><div style="font-size:.72rem;color:rgba(168,85,247,.7);margin-top:.3rem;">'+(end-start).toFixed(1)+'s | '+(blob.size/(1024*1024)).toFixed(2)+' MB</div>');done();};
+      tv.currentTime=start;await new Promise(function(r){tv.onseeked=r;});
+      rec.start();tv.play();
+      var di=setInterval(function(){ctx.drawImage(tv,0,0);if(tv.currentTime>=end){clearInterval(di);tv.pause();setTimeout(function(){rec.stop();},100);}},33);
+      await dp;
+    };
+  },
+
+  // VIDEO JOINER
+  videoJoin: async function(v){
+    var files=v.videos;
+    if(!files||files.length<2){showError('Select at least 2 videos.');return;}
+    showLoading('Joining '+files.length+' videos...');
+    var canvas=document.createElement('canvas');var ctx=canvas.getContext('2d');
+    var allChunks=[];
+    for(var i=0;i<files.length;i++){
+      showLoading('Processing video '+(i+1)+'/'+files.length+'...');
+      var url=URL.createObjectURL(files[i]);
+      var vid=document.createElement('video');vid.src=url;vid.muted=true;
+      await new Promise(function(r){vid.onloadedmetadata=r;});
+      if(i===0){canvas.width=vid.videoWidth;canvas.height=vid.videoHeight;}
+      var cs=canvas.captureStream(30);
+      var rec=new MediaRecorder(cs,{mimeType:'video/webm'});
+      var chunks=[];rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      var done;var dp=new Promise(function(r){done=r;});
+      rec.onstop=function(){allChunks=allChunks.concat(chunks);done();};
+      vid.currentTime=0;await new Promise(function(r){vid.onseeked=r;});
+      rec.start();vid.play();
+      var di=setInterval(function(){ctx.drawImage(vid,0,0,canvas.width,canvas.height);if(vid.ended||vid.paused){clearInterval(di);rec.stop();}},33);
+      await dp;
+    }
+    var blob=new Blob(allChunks,{type:'video/webm'});var burl=URL.createObjectURL(blob);
+    window._lastBlob=blob;window._lastBlobUrl=burl;
+    showResult('<video src="'+burl+'" controls style="width:100%;border-radius:8px;"></video><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\x27joined-8bfr.webm\x27)">Download</button><button class="btn btn-sm" onclick="convertToMp4(window._lastBlob,\x27joined-8bfr.mp4\x27)" style="margin-left:.2rem;">MP4</button></div><div style="font-size:.72rem;color:rgba(168,85,247,.7);margin-top:.3rem;">'+files.length+' videos joined | '+(blob.size/(1024*1024)).toFixed(2)+' MB</div>');
+  },
+
+  // AUDIO CUTTER
+  audioCut: async function(v){
+    var files=v.audio;
+    if(!files||!files[0]){showError('Upload an audio file.');return;}
+    showLoading('Loading audio...');
+    var url=URL.createObjectURL(files[0]);
+    var audio=document.createElement('audio');audio.src=url;
+    await new Promise(function(r){audio.onloadedmetadata=r;});
+    var dur=audio.duration;
+    showResult(
+      '<audio id="acPrev" src="'+url+'" controls style="width:100%;margin-bottom:.4rem;"></audio>'+
+      '<div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-bottom:.3rem;">Duration: '+dur.toFixed(1)+'s. Drag sliders to select range:</div>'+
+      '<div style="display:flex;gap:.3rem;align-items:center;margin-bottom:.3rem;">'+
+      '<span style="font-size:.65rem;">Start:</span><input type="range" id="acS" min="0" max="'+dur.toFixed(1)+'" step="0.1" value="0" style="flex:1;" oninput="document.getElementById(\'acSV\').textContent=this.value+\'s\'"><span id="acSV" style="font-size:.65rem;">0s</span></div>'+
+      '<div style="display:flex;gap:.3rem;align-items:center;margin-bottom:.4rem;">'+
+      '<span style="font-size:.65rem;">End:</span><input type="range" id="acE" min="0" max="'+dur.toFixed(1)+'" step="0.1" value="'+dur.toFixed(1)+'" style="flex:1;" oninput="document.getElementById(\'acEV\').textContent=this.value+\'s\'"><span id="acEV" style="font-size:.65rem;">'+dur.toFixed(1)+'s</span></div>'+
+      '<button class="btn btn-primary" onclick="doAudioCut()">Cut Audio</button>'
+    );
+    window._acUrl=url;window._acDur=dur;
+    window.doAudioCut=async function(){
+      var s=parseFloat(document.getElementById('acS').value),e=parseFloat(document.getElementById('acE').value);
+      if(e<=s){showError('End must be after start.');return;}
+      showLoading('Cutting audio...');
+      var ac2=new(window.AudioContext||window.webkitAudioContext)();
+      var resp=await fetch(url);var buf=await resp.arrayBuffer();var decoded=await ac2.decodeAudioData(buf);
+      var sr=decoded.sampleRate,ch=decoded.numberOfChannels;
+      var startSamp=Math.floor(s*sr),endSamp=Math.floor(e*sr),len=endSamp-startSamp;
+      var newBuf=ac2.createBuffer(ch,len,sr);
+      for(var c=0;c<ch;c++){var src=decoded.getChannelData(c);var dst=newBuf.getChannelData(c);for(var i=0;i<len;i++)dst[i]=src[startSamp+i];}
+      var wav=audioBufferToWav(newBuf);var blob=new Blob([wav],{type:'audio/wav'});var burl=URL.createObjectURL(blob);
+      window._lastBlob=blob;window._lastBlobUrl=burl;
+      showResult('<audio src="'+burl+'" controls style="width:100%;"></audio><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\'cut-8bfr.wav\')">Download</button></div><div style="font-size:.72rem;color:rgba(168,85,247,.7);margin-top:.3rem;">'+(e-s).toFixed(1)+'s | '+(blob.size/1024).toFixed(0)+' KB</div>');
+    };
+  },
+
+  // SPEED CHANGER
+  speedChange: async function(v){
+    var files=v.media;
+    if(!files||!files[0]){showError('Upload a file.');return;}
+    var speed=parseFloat(v.speed)||1.5;
+    if(speed<0.25||speed>4){showError('Speed must be 0.25 to 4.');return;}
+    showLoading('Changing speed to '+speed+'x...');
+    var isVid=files[0].type.startsWith('video');
+    var url=URL.createObjectURL(files[0]);
+    if(isVid){
+      var vid=document.createElement('video');vid.src=url;vid.playbackRate=speed;vid.muted=true;
+      await new Promise(function(r){vid.onloadedmetadata=r;});
+      var canvas=document.createElement('canvas');canvas.width=vid.videoWidth;canvas.height=vid.videoHeight;
+      var ctx=canvas.getContext('2d');var cs=canvas.captureStream(30);
+      var chunks=[];var rec=new MediaRecorder(cs,{mimeType:'video/webm'});
+      rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      var done;var dp=new Promise(function(r){done=r;});
+      rec.onstop=function(){var blob=new Blob(chunks,{type:'video/webm'});var burl=URL.createObjectURL(blob);window._lastBlob=blob;window._lastBlobUrl=burl;showResult('<video src="'+burl+'" controls style="width:100%;border-radius:8px;"></video><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\x27speed-8bfr.webm\x27)">Download</button><button class="btn btn-sm" onclick="convertToMp4(window._lastBlob,\x27speed-8bfr.mp4\x27)" style="margin-left:.2rem;">MP4</button></div>');done();};
+      vid.currentTime=0;rec.start();vid.play();
+      var di=setInterval(function(){ctx.drawImage(vid,0,0);if(vid.ended){clearInterval(di);rec.stop();}},33);
+      await dp;
+    }else{
+      var ac2=new(window.AudioContext||window.webkitAudioContext)();
+      var resp=await fetch(url);var buf=await resp.arrayBuffer();var decoded=await ac2.decodeAudioData(buf);
+      var newLen=Math.floor(decoded.length/speed);var newBuf=ac2.createBuffer(decoded.numberOfChannels,newLen,decoded.sampleRate);
+      for(var c=0;c<decoded.numberOfChannels;c++){var src=decoded.getChannelData(c);var dst=newBuf.getChannelData(c);for(var i=0;i<newLen;i++){var si=Math.floor(i*speed);dst[i]=si<src.length?src[si]:0;}}
+      var wav=audioBufferToWav(newBuf);var blob=new Blob([wav],{type:'audio/wav'});var burl=URL.createObjectURL(blob);
+      window._lastBlob=blob;window._lastBlobUrl=burl;
+      showResult('<audio src="'+burl+'" controls style="width:100%;"></audio><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\'speed-8bfr.wav\')">Download</button></div>');
+    }
+  },
+
+  // SCREEN RECORDER
+  screenRec: async function(){
+    try{
+      var stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
+      var chunks=[];var rec=new MediaRecorder(stream,{mimeType:'video/webm'});
+      rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      rec.onstop=function(){
+        var blob=new Blob(chunks,{type:'video/webm'});var url=URL.createObjectURL(blob);
+        window._lastBlob=blob;window._lastBlobUrl=url;
+        showResult('<video src="'+url+'" controls style="width:100%;border-radius:8px;"></video><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\x27screen-8bfr.webm\x27)">Download</button><button class="btn btn-sm" onclick="convertToMp4(window._lastBlob,\x27screen-8bfr.mp4\x27)" style="margin-left:.2rem;">MP4</button></div><div style="font-size:.72rem;color:rgba(168,85,247,.7);margin-top:.3rem;">'+(blob.size/(1024*1024)).toFixed(2)+' MB</div>');
+      };
+      rec.start();
+      showResult('<div style="text-align:center;padding:1rem;"><div style="font-size:1.5rem;color:#ef4444;margin-bottom:.5rem;">Recording Screen...</div><button class="btn btn-primary" onclick="window._screenRec.stop();window._screenStream.getTracks().forEach(function(t){t.stop();});">Stop Recording</button></div>');
+      window._screenRec=rec;window._screenStream=stream;
+      stream.getVideoTracks()[0].onended=function(){rec.stop();};
+    }catch(e){showError('Screen recording denied or not supported: '+e.message);}
+  },
+
+  // VOICE RECORDER
+  // GREEN SCREEN
+  greenScreen: async function(v){
+    var files=v.media;
+    if(!files||!files[0]){showError('Upload a photo or video.');return;}
+    var bgType=v.bgType||'Transparent';
+    var bgColor=v.bgColor||'#000000';
+    var bgFiles=v.bgImage;
+    var bgVidFiles=v.bgVideo;
+    var tol=parseInt(v.tolerance)||45;
+    var addOutline=(v.textOutline||'Yes')==='Yes';
+    var isVideo=files[0].type.startsWith('video');
+    var url=URL.createObjectURL(files[0]);
+    var si=Math.sin,co=Math.cos;
+
+    var bgImg=null;
+    if(bgType==='Upload Image'&&bgFiles&&bgFiles[0]){
+      bgImg=new Image();
+      await new Promise(function(r,j){bgImg.onload=r;bgImg.onerror=function(){j(new Error("Background image load failed — try again."));};bgImg.src=URL.createObjectURL(bgFiles[0]);});
+    }
+    var bgVid=null;
+    if(bgType==='Upload Video'&&bgVidFiles&&bgVidFiles[0]){
+      bgVid=document.createElement('video');bgVid.src=URL.createObjectURL(bgVidFiles[0]);
+      bgVid.muted=true;bgVid.loop=true;bgVid.playsInline=true;
+      await new Promise(function(r){bgVid.onloadedmetadata=r;});
+    }
+
+    // Auto-detect: find the MOST FREQUENT color in edges + sampling
+    function autoDetectBg(data,w,h){
+      var buckets={};
+      // Sample edges + grid
+      function addPixel(idx){
+        // Round to nearest 8 to cluster similar colors
+        var r=data[idx]>>3<<3,g=data[idx+1]>>3<<3,b=data[idx+2]>>3<<3;
+        var key=r+','+g+','+b;
+        buckets[key]=(buckets[key]||0)+1;
+      }
+      // All 4 edges
+      for(var x=0;x<w;x+=2){addPixel(x*4);addPixel(((h-1)*w+x)*4);}
+      for(var y=0;y<h;y+=2){addPixel((y*w)*4);addPixel((y*w+w-1)*4);}
+      // Grid sample every 20px
+      for(var y=0;y<h;y+=20)for(var x=0;x<w;x+=20)addPixel((y*w+x)*4);
+      // Find most frequent
+      var maxKey='',maxCount=0;
+      for(var k in buckets){if(buckets[k]>maxCount){maxCount=buckets[k];maxKey=k;}}
+      var parts=maxKey.split(',');
+      return [parseInt(parts[0]),parseInt(parts[1]),parseInt(parts[2])];
+    }
+
+    function swapPixels(fg,bg,key,t2,addOutline){
+      var f=fg.data,b=bg.data;var w2=fg.width;
+      // First pass: mark which pixels are background
+      var isBgMap=new Uint8Array(f.length/4);
+      for(var i=0;i<f.length;i+=4){
+        var dr=f[i]-key[0],dg=f[i+1]-key[1],db=f[i+2]-key[2];
+        var dist=Math.sqrt(dr*dr+dg*dg+db*db);
+        if(dist<t2){isBgMap[i/4]=1;f[i]=b[i];f[i+1]=b[i+1];f[i+2]=b[i+2];}
+        else if(dist<t2*1.5){var m=(t2*1.5-dist)/(t2*0.5);isBgMap[i/4]=2;f[i]=Math.round(f[i]*(1-m)+b[i]*m);f[i+1]=Math.round(f[i+1]*(1-m)+b[i+1]*m);f[i+2]=Math.round(f[i+2]*(1-m)+b[i+2]*m);}
+      }
+      // Second pass: add dark outline around non-bg pixels (text/subject)
+      if(addOutline){
+        var h2=fg.height;
+        for(var y=1;y<h2-1;y++){
+          for(var x=1;x<w2-1;x++){
+            var idx=y*w2+x;
+            if(isBgMap[idx]===0){// This is a foreground (text) pixel
+              // Check if any neighbor is background - if so, darken those neighbors
+              var neighbors=[idx-1,idx+1,idx-w2,idx+w2,idx-w2-1,idx-w2+1,idx+w2-1,idx+w2+1];
+              for(var n=0;n<neighbors.length;n++){
+                var ni=neighbors[n];
+                if(ni>=0&&ni<isBgMap.length&&isBgMap[ni]>=1){
+                  var pi=ni*4;
+                  f[pi]=Math.round(f[pi]*0.3);
+                  f[pi+1]=Math.round(f[pi+1]*0.3);
+                  f[pi+2]=Math.round(f[pi+2]*0.3);
+                  isBgMap[ni]=3;// Mark as outlined so we don't re-darken
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function drawBg(c,w,h,t,type){
+      switch(type){
+        case 'Music Visualizer':c.fillStyle='#0a0020';c.fillRect(0,0,w,h);for(var i=0;i<32;i++){c.fillStyle='hsl('+(i*11+t*50)+',80%,55%)';c.fillRect(i*(w/32),h-(0.3+0.7*Math.abs(si(t*3+i*0.5)))*h,w/32-2,(0.3+0.7*Math.abs(si(t*3+i*0.5)))*h);}break;
+        case 'Neon Waves':c.fillStyle='#050015';c.fillRect(0,0,w,h);for(var j=0;j<5;j++){c.strokeStyle='hsla('+(j*72+t*30)+',100%,60%,.6)';c.lineWidth=3;c.beginPath();for(var x=0;x<w;x+=4)c.lineTo(x,h/2+si(x*0.02+t*2+j)*80);c.stroke();}break;
+        case 'Starfield':c.fillStyle='#000008';c.fillRect(0,0,w,h);for(var i=0;i<120;i++){c.fillStyle='rgba(255,255,255,'+(0.3+0.7*Math.abs(si(t*2+i)))+')';c.beginPath();c.arc((i*137.5+t*20*(i%3+1))%w,(i*97.3+t*10*(i%2+1))%h,1+i%2,0,6.28);c.fill();}break;
+        case 'Concert Lights':c.fillStyle='#0a0010';c.fillRect(0,0,w,h);for(var i=0;i<8;i++){var g=c.createRadialGradient(w/2+si(t*1.5+i*0.8)*w*0.4,-20,0,w/2,h/2,h);g.addColorStop(0,'hsla('+(i*45+t*40)+',100%,60%,.4)');g.addColorStop(1,'transparent');c.fillStyle=g;c.fillRect(0,0,w,h);}break;
+        case 'Gradient Flow':var hu=(t*30)%360;var g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'hsl('+hu+',70%,20%)');g.addColorStop(0.5,'hsl('+((hu+120)%360)+',70%,30%)');g.addColorStop(1,'hsl('+((hu+240)%360)+',70%,20%)');c.fillStyle=g;c.fillRect(0,0,w,h);break;
+        case 'Matrix Rain':c.fillStyle='#000500';c.fillRect(0,0,w,h);c.fillStyle='#0f0';c.font='12px monospace';for(var i=0;i<w/14;i++)c.fillText(String.fromCharCode(0x30A0+((t*10+i*7)%96)|0),i*14,((t*100+i*137)%(h+200))-100);break;
+        case 'Fire & Sparks':c.fillStyle='#1a0500';c.fillRect(0,0,w,h);for(var i=0;i<60;i++){c.fillStyle='hsla('+(15+i%20)+',100%,'+(40+i%30)+'%,.5)';c.beginPath();c.arc((i*23.7)%w,h-Math.abs(si(t*3+i*0.7))*(h*0.6),4,0,6.28);c.fill();}break;
+        case 'Underwater':var g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#001830');g.addColorStop(1,'#003060');c.fillStyle=g;c.fillRect(0,0,w,h);break;
+        case 'Vinyl Spin':c.fillStyle='#0a0015';c.fillRect(0,0,w,h);c.save();c.translate(w/2,h/2);c.rotate(t*2);for(var i=0;i<20;i++){c.strokeStyle='rgba(80,50,120,'+(0.15+i*0.02)+')';c.lineWidth=2;c.beginPath();c.arc(0,0,30+i*12,0,6.28);c.stroke();}c.fillStyle='#7c3aed';c.beginPath();c.arc(0,0,20,0,6.28);c.fill();c.restore();break;
+        case 'Laser Show':c.fillStyle='#000005';c.fillRect(0,0,w,h);for(var i=0;i<6;i++){c.strokeStyle='hsla('+(i*60+t*60)+',100%,50%,.7)';c.lineWidth=2;c.beginPath();c.moveTo(w/2,0);c.lineTo(si(t*2+i)*w,h);c.stroke();}break;
+        case 'Aurora Borealis':c.fillStyle='#020810';c.fillRect(0,0,w,h);for(var i=0;i<5;i++){c.strokeStyle='hsla('+(100+i*30)+',70%,50%,.2)';c.lineWidth=50;c.beginPath();for(var x=0;x<w;x+=8)c.lineTo(x,h*0.3+si(x*0.005+t+i*0.5)*60);c.stroke();}break;
+        case 'Confetti Party':c.fillStyle='#1a0030';c.fillRect(0,0,w,h);for(var i=0;i<80;i++){c.fillStyle='hsl('+(i*17)+',85%,60%)';c.save();c.translate((i*31.7+t*20*(i%3+1))%w,(i*47.3+t*40)%(h+40)-20);c.rotate(t*3+i);c.fillRect(-4,-2,8,4);c.restore();}break;
+        default:c.fillStyle=bgColor||'#000';c.fillRect(0,0,w,h);
+      }
+    }
+
+    // === PHOTO ===
+    if(!isVideo){
+      showLoading('Processing image...');
+      var img=new Image();await new Promise(function(r,j){img.onload=r;img.onerror=function(){j(new Error("Image load failed — try again."));};img.src=url;});
+      var w=img.width,h=img.height;
+      var c1=document.createElement('canvas');c1.width=w;c1.height=h;var x1=c1.getContext('2d');
+      x1.drawImage(img,0,0);
+      var fgD=x1.getImageData(0,0,w,h);
+      var key=autoDetectBg(fgD.data,w,h);
+      if(bgType==='Transparent'){
+        var d=fgD.data;for(var i=0;i<d.length;i+=4){var dr=d[i]-key[0],dg=d[i+1]-key[1],db=d[i+2]-key[2];var dist=Math.sqrt(dr*dr+dg*dg+db*db);if(dist<tol)d[i+3]=0;else if(dist<tol*1.5)d[i+3]=Math.round(255*((dist-tol)/(tol*0.5)));}
+        x1.putImageData(fgD,0,0);
+      }else{
+        var c2=document.createElement('canvas');c2.width=w;c2.height=h;var x2=c2.getContext('2d');
+        if(bgType==='Solid Color'){x2.fillStyle=bgColor;x2.fillRect(0,0,w,h);}
+        else if(bgType==='Upload Image'&&bgImg){x2.drawImage(bgImg,0,0,w,h);}
+        else if(bgType==='Upload Video'&&bgVid){bgVid.currentTime=0;await new Promise(function(r){bgVid.onseeked=r;});x2.drawImage(bgVid,0,0,w,h);}
+        else{drawBg(x2,w,h,0,bgType);}
+        swapPixels(fgD,x2.getImageData(0,0,w,h),key,tol,addOutline);
+        x1.putImageData(fgD,0,0);
+      }
+      var du=c1.toDataURL('image/png');window._lastImageUrl=du;
+      showResult('<div style="font-size:.68rem;color:rgba(255,255,255,.3);margin-bottom:.3rem;">Detected BG: RGB('+key.join(',')+') | Tolerance: '+tol+'. Adjust tolerance if result is not right.</div><img src="'+du+'" style="max-width:100%;border-radius:8px;"><div class="result-actions"><button class="btn btn-sm" onclick="downloadImage(\'bg-removed.png\')">Download PNG</button></div>');
+    }
+    // === VIDEO ===
+    else{
+      showLoading('Processing video... 30-60 seconds. Please wait.');
+      var vid=document.createElement('video');vid.src=url;vid.muted=true;vid.playsInline=true;
+      await new Promise(function(r){vid.onloadedmetadata=r;});
+      var w=vid.videoWidth||640,h=vid.videoHeight||360;
+      // Get first frame to detect bg color
+      vid.currentTime=0.1;await new Promise(function(r){vid.onseeked=r;});
+      var tmpC=document.createElement('canvas');tmpC.width=w;tmpC.height=h;var tmpX=tmpC.getContext('2d');
+      tmpX.drawImage(vid,0,0,w,h);
+      var ff=tmpX.getImageData(0,0,w,h);
+      var key=autoDetectBg(ff.data,w,h);
+
+      var outC=document.createElement('canvas');outC.width=w;outC.height=h;var outX=outC.getContext('2d');
+      var bgC=document.createElement('canvas');bgC.width=w;bgC.height=h;var bgX=bgC.getContext('2d');
+      var cs=outC.captureStream(30);
+      var chunks=[];var rec=new MediaRecorder(cs,{mimeType:'video/webm'});
+      rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      var done;var dp=new Promise(function(r){done=r;});
+      rec.onstop=function(){var blob=new Blob(chunks,{type:'video/webm'});window._lastBlob=blob;var bu=URL.createObjectURL(blob);window._lastBlobUrl=bu;showResult('<div style="font-size:.68rem;color:rgba(255,255,255,.3);margin-bottom:.3rem;">Detected BG: RGB('+key.join(',')+') | Tolerance: '+tol+'</div><video src="'+bu+'" controls style="width:100%;border-radius:8px;"></video><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\'bg-video.webm\')">Download</button><button class="btn btn-sm" onclick="convertToMp4(window._lastBlob,\'bg-video.mp4\')" style="margin-left:.2rem;">MP4</button></div>');done();};
+      vid.currentTime=0;await new Promise(function(r){vid.onseeked=r;});
+      rec.start();vid.play();if(bgVid)bgVid.play();
+      var t0=Date.now();
+      var iv=setInterval(function(){
+        var t=(Date.now()-t0)/1000;
+        outX.drawImage(vid,0,0,w,h);
+        var fgD=outX.getImageData(0,0,w,h);
+        if(bgType==='Solid Color'){bgX.fillStyle=bgColor;bgX.fillRect(0,0,w,h);}
+        else if(bgType==='Upload Image'&&bgImg){bgX.drawImage(bgImg,0,0,w,h);}
+        else if(bgType==='Upload Video'&&bgVid){bgX.drawImage(bgVid,0,0,w,h);}
+        else if(bgType!=='Transparent'){drawBg(bgX,w,h,t,bgType);}
+        else{bgX.fillStyle='#000';bgX.fillRect(0,0,w,h);}
+        var bgD=bgX.getImageData(0,0,w,h);
+        swapPixels(fgD,bgD,key,tol,false);// Skip outline on video for performance
+        outX.putImageData(fgD,0,0);
+        if(vid.ended||vid.paused){clearInterval(iv);if(bgVid)bgVid.pause();setTimeout(function(){rec.stop();},300);}
+      },33);
+      await dp;
+    }
+  },
+
+  textAnim: async function(v){
+    var text=v.text||'8BFR MUSIC';
+    var style=v.style||'Bounce';
+    var fontSize=parseInt(v.fontSize)||60;
+    var font=v.fontFamily||'Impact';
+    var color=v.color||'#ffffff';
+    var bg=v.bgColor||'#000000';
+    var transparent=bg==='Transparent';
+    if(!transparent)bg=bg.split(' ')[0];
+    var duration=Math.min(parseFloat(v.duration)||3,10);
+    showResult(
+      '<canvas id="taPreview" style="width:100%;border-radius:8px;background:'+(transparent?'repeating-conic-gradient(rgba(255,255,255,.05) 0% 25%,transparent 0% 50%) 50%/12px 12px':'#000')+';margin-bottom:.4rem;"></canvas>'+
+      '<div style="display:flex;gap:.2rem;flex-wrap:wrap;margin-bottom:.3rem;">'+
+      '<select id="taLS" onchange="taU()" style="flex:1;padding:.25rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:6px;color:#f0ecff;font-size:.62rem;"><option>Bounce</option><option>Wave</option><option>Typewriter</option><option>Glow</option><option>Shake</option><option>Zoom In</option><option>Spin</option><option>Fade In</option><option>Rainbow</option><option>Glitch</option><option>Slide In</option><option>Fire</option><option>Neon</option><option>Pulse</option><option>Matrix</option><option>Sparkle</option><option>3D Shadow</option><option>Marquee</option><option>Heartbeat</option><option>Wobble</option><option>Disco</option><option>Outline</option><option>Drip</option><option>Lightning</option></select>'+
+      '<input id="taLZ" type="number" value="'+fontSize+'" min="12" max="120" onchange="taU()" style="width:45px;padding:.25rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:6px;color:#f0ecff;font-size:.62rem;">'+
+      '<input id="taLC" type="color" value="'+color+'" onchange="taU()" style="width:32px;height:26px;border:none;border-radius:6px;">'+
+      '</div>'+
+      '<div style="display:flex;gap:.2rem;margin-bottom:.3rem;">'+
+      '<select id="taLF" onchange="taU()" style="flex:1;padding:.25rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:6px;color:#f0ecff;font-size:.62rem;"><option>Impact</option><option>Bebas Neue</option><option>Work Sans</option><option>Pacifico</option><option>Permanent Marker</option><option>Press Start 2P</option><option>Arial Black</option></select>'+
+      '<label style="display:flex;align-items:center;gap:.15rem;font-size:.55rem;color:rgba(255,255,255,.5);"><input type="checkbox" id="taStr" onchange="taU()">Outline</label>'+
+      '<input id="taOC" type="color" value="#000000" onchange="taU()" title="Outline color" style="width:28px;height:24px;border:none;border-radius:4px;cursor:pointer;">'+
+      '<label style="display:flex;align-items:center;gap:.15rem;font-size:.55rem;color:rgba(255,255,255,.5);"><input type="checkbox" id="taBld" checked onchange="taU()">Bold</label>'+
+      '</div>'+
+      '<div style="display:flex;gap:.2rem;margin-bottom:.3rem;align-items:center;">'+
+      '<span style="font-size:.5rem;color:rgba(255,255,255,.3);">Shadow:</span>'+
+      '<input id="taSX" type="number" value="0" min="-20" max="20" onchange="taU()" style="width:38px;padding:.2rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:4px;color:#f0ecff;font-size:.55rem;" title="Shadow X">'+
+      '<input id="taSY" type="number" value="0" min="-20" max="20" onchange="taU()" style="width:38px;padding:.2rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:4px;color:#f0ecff;font-size:.55rem;" title="Shadow Y">'+
+      '<input id="taSB" type="number" value="0" min="0" max="30" onchange="taU()" style="width:38px;padding:.2rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:4px;color:#f0ecff;font-size:.55rem;" title="Shadow blur">'+
+      '<input id="taSC" type="color" value="#000000" onchange="taU()" title="Shadow color" style="width:28px;height:24px;border:none;border-radius:4px;cursor:pointer;">'+
+      '<input id="taOW" type="number" value="3" min="1" max="20" onchange="taU()" style="width:35px;padding:.2rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:4px;color:#f0ecff;font-size:.55rem;" title="Outline width">'+
+      '</div>'+
+      '<div style="display:flex;gap:.2rem;margin-bottom:.3rem;align-items:center;">'+
+      '<span style="font-size:.55rem;color:rgba(255,255,255,.4);">BG:</span>'+
+      '<select id="taLB" onchange="taU()" style="flex:1;padding:.25rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:6px;color:#f0ecff;font-size:.62rem;">'+
+      '<option value="Transparent">Transparent</option><option value="#000000" selected>Black</option><option value="#ffffff">White</option><option value="#7c3aed">Purple</option><option value="#ef4444">Red</option><option value="#2563eb">Blue</option><option value="#22c55e">Green</option><option value="#f97316">Orange</option><option value="#1a1a2e">Dark Navy</option></select>'+
+      '</div>'+
+      '<textarea id="taLT" rows="2" style="width:100%;padding:.3rem;background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.25);border-radius:6px;color:#f0ecff;font-size:.78rem;margin-bottom:.3rem;resize:vertical;" oninput="taU()" placeholder="Type text...">'+esc(text)+'</textarea>'+
+      '<div style="display:flex;gap:.2rem;margin-bottom:.3rem;align-items:center;">'+
+      '<label style="display:flex;align-items:center;gap:.15rem;font-size:.55rem;color:rgba(255,255,255,.5);"><input type="checkbox" id="taVO" onchange="taU()">Voice-Over</label>'+
+      '<select id="taVoice" style="flex:1;padding:.2rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:6px;color:#f0ecff;font-size:.55rem;"></select>'+
+      '<input id="taRate" type="number" value="1" min="0.5" max="2" step="0.1" title="Speech speed" style="width:38px;padding:.2rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:4px;color:#f0ecff;font-size:.55rem;">'+
+      '<button onclick="taPreviewVoice()" style="padding:.2rem .4rem;border-radius:4px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#a855f7;font-size:.5rem;cursor:pointer;white-space:nowrap;">Test</button>'+
+      '</div>'+
+      '<div style="display:flex;gap:.2rem;"><button class="btn btn-primary" onclick="taRec()" style="flex:1;">Record '+duration+'s Video</button></div>'+
+      '<div id="taRS" style="font-size:.62rem;color:rgba(255,255,255,.4);margin-top:.2rem;">Live preview - change settings above</div>'
+    );
+    var cv=document.getElementById('taPreview');var W=480,H=270;cv.width=W;cv.height=H;var ctx=cv.getContext('2d');
+    var fr=0;var _s=style,_z=fontSize,_c=color,_f=font,_t=text,_st=false,_b=true,_bg=bg,_tr=transparent,_oc='#000000',_sx=0,_sy=0,_sb=0,_sc='#000000',_ow=3;
+    document.getElementById('taLS').value=style;
+    if(document.getElementById('taLB'))document.getElementById('taLB').value=transparent?'Transparent':bg;
+    window.taU=function(){_s=document.getElementById('taLS').value;_z=parseInt(document.getElementById('taLZ').value)||60;_c=document.getElementById('taLC').value;_f=document.getElementById('taLF').value;_t=document.getElementById('taLT').value||'8BFR';_st=document.getElementById('taStr').checked;_b=document.getElementById('taBld').checked;_oc=document.getElementById('taOC').value;_ow=parseInt(document.getElementById('taOW').value)||3;_sx=parseInt(document.getElementById('taSX').value)||0;_sy=parseInt(document.getElementById('taSY').value)||0;_sb=parseInt(document.getElementById('taSB').value)||0;_sc=document.getElementById('taSC').value;var bv=document.getElementById('taLB').value;_tr=bv==='Transparent';_bg=_tr?'#000':bv;var pv=document.getElementById('taPreview');if(pv)pv.style.background=_tr?'repeating-conic-gradient(rgba(255,255,255,.05) 0% 25%,transparent 0% 50%) 50%/12px 12px':_bg;};
+
+    // Load voices
+    function loadVoices(){var sel=document.getElementById('taVoice');if(!sel)return;var voices=speechSynthesis.getVoices();sel.innerHTML='';voices.forEach(function(v,i){var opt=document.createElement('option');opt.value=i;opt.textContent=v.name+(v.lang?' ('+v.lang+')':'');sel.appendChild(opt);});}
+    loadVoices();speechSynthesis.onvoiceschanged=loadVoices;
+    function wL(c2,tx,mw){var paras=tx.split('\n'),all=[];paras.forEach(function(para){if(!para){all.push('');return;}var w=para.split(' '),l='';for(var i=0;i<w.length;i++){var t2=l?(l+' '+w[i]):w[i];if(c2.measureText(t2).width>mw&&l){all.push(l);l=w[i];}else l=t2;}if(l)all.push(l);});return all;}
+    function dL(ox,oy,cl,ls,sy2,lh){if(_sb>0||_sx||_sy){ctx.shadowColor=_sc;ctx.shadowBlur=_sb;ctx.shadowOffsetX=_sx;ctx.shadowOffsetY=_sy;}ctx.fillStyle=cl||_c;for(var i=0;i<ls.length;i++)ctx.fillText(ls[i],W/2+ox,sy2+i*lh+oy);ctx.shadowColor='transparent';ctx.shadowBlur=0;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;}
+    function sL(ox,oy,cl,w2,ls,sy2,lh){ctx.strokeStyle=cl||_oc;ctx.lineWidth=w2||_ow;ctx.lineJoin='round';for(var i=0;i<ls.length;i++)ctx.strokeText(ls[i],W/2+ox,sy2+i*lh+oy);}
+    function ren(){
+      fr++;var t=((fr%180)/180);
+      // Auto-expand for effects that need room (spin, zoom, bounce)
+      var extraH=(_s==='Spin'||_s==='Zoom In')?_z*2:(_s==='Bounce')?60:0;
+      if(_tr)ctx.clearRect(0,0,W,H);else{ctx.fillStyle=_bg;ctx.fillRect(0,0,W,H);}
+      var bd=_b?'bold ':'';ctx.font=bd+_z+'px '+_f;ctx.textAlign='center';ctx.textBaseline='middle';
+      var ls=wL(ctx,_t,W-20),lh=_z*1.2,th=ls.length*lh;
+      var needH=Math.max(270,th+60+extraH);
+      if(cv.height!==needH){cv.height=needH;H=needH;}
+      var sy=H/2-th/2+lh/2;
+      switch(_s){
+        case 'Bounce':var by=Math.sin(t*Math.PI*4)*25;if(_st)sL(0,by,0,0,ls,sy,lh);dL(0,by,0,ls,sy,lh);break;
+        case 'Wave':for(var li=0;li<ls.length;li++){var ch=ls[li].split(''),lw=ctx.measureText(ls[li]).width,lx=W/2-lw/2;for(var i=0;i<ch.length;i++){var cw=ctx.measureText(ch[i]).width;ctx.fillStyle=_c;ctx.fillText(ch[i],lx+cw/2,sy+li*lh+Math.sin(t*Math.PI*6+i*.5)*18);lx+=cw;}}break;
+        case 'Typewriter':var al=ls.join(' '),sh=Math.floor(t*al.length*1.8),cc=0;ctx.fillStyle=_c;for(var li=0;li<ls.length;li++){var ln=Math.min(Math.max(sh-cc,0),ls[li].length);ctx.fillText(ls[li].substring(0,ln),W/2,sy+li*lh);cc+=ls[li].length+1;}if(Math.floor(t*10)%2===0)ctx.fillRect(W/2+10,sy-_z/2,3,_z);break;
+        case 'Glow':ctx.shadowColor=_c;ctx.shadowBlur=6+Math.sin(t*Math.PI*3)*4;if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);ctx.shadowBlur=0;break;
+        case 'Shake':var sx=(Math.random()-.5)*6,sy2=(Math.random()-.5)*6;if(_st)sL(sx,sy2,0,0,ls,sy,lh);dL(sx,sy2,0,ls,sy,lh);break;
+        case 'Zoom In':var sc=Math.min(t*2.5,1),zs=Math.max(4,Math.round(_z*sc));ctx.font=bd+zs+'px '+_f;ctx.globalAlpha=Math.min(t*3,1);var zl=wL(ctx,_t,W-20),zlh=zs*1.2,zsy=H/2-zl.length*zlh/2+zlh/2;dL(0,0,0,zl,zsy,zlh);ctx.globalAlpha=1;break;
+        case 'Spin':ctx.save();ctx.translate(W/2,H/2);ctx.rotate(t*Math.PI*4);dL(-W/2,0,0,ls,H/2-th/2+lh/2-H/2,lh);ctx.restore();break;
+        case 'Fade In':ctx.globalAlpha=Math.min(t*2.5,1);if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);ctx.globalAlpha=1;break;
+        case 'Rainbow':for(var li=0;li<ls.length;li++){var ch=ls[li].split(''),lw=ctx.measureText(ls[li]).width,lx=W/2-lw/2;for(var i=0;i<ch.length;i++){ctx.fillStyle='hsl('+((t*360+i*30+li*60)%360)+',100%,60%)';var cw=ctx.measureText(ch[i]).width;ctx.fillText(ch[i],lx+cw/2,sy+li*lh);lx+=cw;}}break;
+        case 'Glitch':if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);if(Math.random()<.3){dL((Math.random()-.5)*10,(Math.random()-.5)*5,'#ef4444',ls,sy,lh);dL((Math.random()-.5)*10,(Math.random()-.5)*5,'#3b82f6',ls,sy,lh);}break;
+        case 'Slide In':var slx=W*(1-Math.min(t*2.5,1));if(_st)sL(slx,0,0,0,ls,sy,lh);dL(slx,0,0,ls,sy,lh);break;
+        case 'Fire':if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);for(var p=0;p<10;p++){var fcolors=['#fbbf24','#f97316','#ef4444','#fde68a'];ctx.fillStyle=fcolors[Math.floor(Math.random()*4)];ctx.globalAlpha=Math.random()*.6+.3;ctx.beginPath();var fx2=W/2+(Math.random()-.5)*W*.5;var fy2=sy-_z*.3-Math.random()*30;ctx.arc(fx2,fy2,1+Math.random()*4,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;break;
+        case 'Neon':ctx.shadowColor=_c;ctx.shadowBlur=15;sL(0,0,_c,2,ls,sy,lh);ctx.shadowBlur=8;sL(0,0,'#fff',1,ls,sy,lh);ctx.shadowBlur=0;break;
+        case 'Pulse':var ps=1+Math.sin(t*Math.PI*4)*.15;ctx.save();ctx.translate(W/2,H/2);ctx.scale(ps,ps);ctx.translate(-W/2,-H/2);if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);ctx.restore();break;
+        case 'Matrix':ctx.fillStyle='#22c55e';for(var li=0;li<ls.length;li++){var ch=ls[li].split(''),lw=ctx.measureText(ls[li]).width,lx=W/2-lw/2;for(var i=0;i<ch.length;i++){var cw=ctx.measureText(ch[i]).width;ctx.globalAlpha=.5+Math.random()*.5;ctx.fillText(ch[i],lx+cw/2,sy+li*lh+Math.sin(t*20+i)*3);lx+=cw;}}ctx.globalAlpha=1;for(var d=0;d<8;d++){ctx.fillStyle='rgba(34,197,94,'+(Math.random()*.3)+')';ctx.font='10px monospace';ctx.fillText(String.fromCharCode(48+Math.floor(Math.random()*74)),Math.random()*W,Math.random()*H);ctx.font=bd+_z+'px '+_f;}break;
+        case 'Sparkle':if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);for(var s=0;s<12;s++){var sx3=Math.random()*W,sy3=Math.random()*H,ss=1+Math.random()*3;ctx.fillStyle='rgba(255,255,255,'+(Math.random()*.7+.3)+')';ctx.beginPath();ctx.moveTo(sx3,sy3-ss);ctx.lineTo(sx3+ss*.3,sy3-ss*.3);ctx.lineTo(sx3+ss,sy3);ctx.lineTo(sx3+ss*.3,sy3+ss*.3);ctx.lineTo(sx3,sy3+ss);ctx.lineTo(sx3-ss*.3,sy3+ss*.3);ctx.lineTo(sx3-ss,sy3);ctx.lineTo(sx3-ss*.3,sy3-ss*.3);ctx.fill();}break;
+        case '3D Shadow':for(var d=6;d>0;d--){ctx.fillStyle='rgba(0,0,0,'+(d*.06)+')';for(var i=0;i<ls.length;i++)ctx.fillText(ls[i],W/2+d,sy+i*lh+d);}dL(0,0,0,ls,sy,lh);break;
+        case 'Marquee':var mx=W-((t*2)%1)*(W*1.5);ctx.fillStyle=_c;for(var i=0;i<ls.length;i++)ctx.fillText(ls[i],mx,sy+i*lh);break;
+        case 'Heartbeat':var hb=1+Math.abs(Math.sin(t*Math.PI*6))*.2;ctx.save();ctx.translate(W/2,H/2);ctx.scale(hb,hb);ctx.translate(-W/2,-H/2);if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);ctx.restore();break;
+        case 'Wobble':ctx.save();ctx.translate(W/2,H/2);ctx.rotate(Math.sin(t*Math.PI*6)*.08);ctx.translate(-W/2,-H/2);if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);ctx.restore();break;
+        case 'Disco':for(var li=0;li<ls.length;li++){var ch=ls[li].split(''),lw=ctx.measureText(ls[li]).width,lx=W/2-lw/2;for(var i=0;i<ch.length;i++){ctx.fillStyle='hsl('+((t*720+i*45+li*90+Math.random()*30)%360)+',100%,'+(40+Math.random()*30)+'%)';var cw=ctx.measureText(ch[i]).width;ctx.fillText(ch[i],lx+cw/2,sy+li*lh);lx+=cw;}}break;
+        case 'Outline':ctx.lineWidth=_ow;ctx.lineJoin='round';ctx.strokeStyle=_c;for(var i=0;i<ls.length;i++)ctx.strokeText(ls[i],W/2,sy+i*lh);break;
+        case 'Drip':if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);for(var li=0;li<ls.length;li++){var ch=ls[li].split(''),lw=ctx.measureText(ls[li]).width,lx=W/2-lw/2;for(var i=0;i<ch.length;i++){var cw=ctx.measureText(ch[i]).width;if(Math.random()<.15){ctx.fillStyle=_c;ctx.beginPath();ctx.arc(lx+cw/2,sy+li*lh+_z/2+Math.random()*15,1+Math.random()*2,0,Math.PI*2);ctx.fill();}lx+=cw;}}break;
+        case 'Lightning':if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);if(Math.random()<.2){ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();var lsx2=Math.random()*W,lsy2=0;ctx.moveTo(lsx2,lsy2);for(var s=0;s<6;s++){lsx2+=(Math.random()-.5)*40;lsy2+=H/6;ctx.lineTo(lsx2,lsy2);}ctx.stroke();}break;
+        default:if(_st)sL(0,0,0,0,ls,sy,lh);dL(0,0,0,ls,sy,lh);
+      }
+      requestAnimationFrame(ren);
+    }
+    ren();
+    window.taRec=function(){
+      var fmt=bestVideoMime();
+      var cs=cv.captureStream(30);
+      var voiceOn=document.getElementById('taVO')&&document.getElementById('taVO').checked;
+
+      // If voice-over, speak the text during recording
+      if(voiceOn&&window.speechSynthesis){
+        var utter=new SpeechSynthesisUtterance(_t);
+        var voices=speechSynthesis.getVoices();
+        var vi=parseInt(document.getElementById('taVoice').value)||0;
+        if(voices[vi])utter.voice=voices[vi];
+        utter.rate=parseFloat(document.getElementById('taRate').value)||1;
+        speechSynthesis.speak(utter);
+      }
+
+      var chunks=[];
+      var recOpts=fmt.mime?{mimeType:fmt.mime}:{};
+      var rec=new MediaRecorder(cs,recOpts);
+      rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      rec.onstop=function(){var blob=new Blob(chunks,{type:fmt.mime||'video/webm'});var url=URL.createObjectURL(blob);window._lastBlob=blob;window._lastBlobUrl=url;var a=document.createElement('a');a.href=url;a.download='animated-text-8bfr.'+fmt.ext;document.body.appendChild(a);a.click();document.body.removeChild(a);document.getElementById('taRS').innerHTML='Downloaded as .'+fmt.ext+'! <a href="'+url+'" download="animated-text-8bfr.'+fmt.ext+'" style="color:#4ade80;">Download Again</a>'+(fmt.ext==='webm'?' <button id="taMp4Btn" style="margin-left:.3rem;padding:.2rem .5rem;border-radius:6px;background:#7c3aed;color:#fff;border:none;font-size:.6rem;font-weight:700;cursor:pointer;" onclick="taMp4()">Convert to MP4</button>':'');};
+      window.taMp4=async function(){var b=document.getElementById('taMp4Btn');if(b){b.textContent='Loading FFmpeg...';b.disabled=true;}try{await loadFFmpeg();if(b)b.textContent='Converting...';var u=await convertToMp4(window._lastBlob,'animated-text-8bfr.mp4');if(b)b.textContent=u?'MP4 Downloaded!':'Failed';}catch(e){if(b)b.textContent='Error';}};
+      rec.start();document.getElementById('taRS').textContent='Recording '+duration+'s...'+(voiceOn?' (speaking)':'');
+      setTimeout(function(){rec.stop();speechSynthesis.cancel();},duration*1000);
+    };
+
+    // Preview voice button
+    window.taPreviewVoice=function(){
+      speechSynthesis.cancel();
+      var utter=new SpeechSynthesisUtterance(_t);
+      var voices=speechSynthesis.getVoices();
+      var vi=parseInt(document.getElementById('taVoice').value)||0;
+      if(voices[vi])utter.voice=voices[vi];
+      utter.rate=parseFloat(document.getElementById('taRate').value)||1;
+      speechSynthesis.speak(utter);
+    };
+  },
+
+  // VOICE RECORDER
+  voiceRec: async function(){
+    try{
+      var stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      var chunks=[];var rec=new MediaRecorder(stream);
+      rec.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+      rec.onstop=function(){
+        var blob=new Blob(chunks,{type:'audio/webm'});var url=URL.createObjectURL(blob);
+        window._lastBlob=blob;window._lastBlobUrl=url;
+        showResult('<audio src="'+url+'" controls style="width:100%;"></audio><div class="result-actions"><button class="btn btn-sm" onclick="downloadBlob(\'voice-8bfr.webm\')">Download</button></div><div style="font-size:.72rem;color:rgba(168,85,247,.7);margin-top:.3rem;">'+(blob.size/1024).toFixed(0)+' KB</div>');
+      };
+      window._voiceStart=Date.now();
+      rec.start();
+      showResult('<div style="text-align:center;padding:1rem;"><div style="font-size:2rem;color:#ef4444;margin-bottom:.3rem;">&#x1F534;</div><div style="font-size:1rem;color:#ef4444;font-weight:700;margin-bottom:.5rem;">Recording...</div><div id="voiceTimer" style="font-family:Bebas Neue;font-size:1.5rem;color:#fff;">0:00</div><button class="btn btn-primary" style="margin-top:.5rem;" onclick="window._voiceRec.stop();window._voiceStream.getTracks().forEach(function(t){t.stop();});clearInterval(window._voiceIv);">Stop Recording</button></div>');
+      window._voiceRec=rec;window._voiceStream=stream;
+      window._voiceIv=setInterval(function(){var s=Math.floor((Date.now()-window._voiceStart)/1000);var el=document.getElementById('voiceTimer');if(el)el.textContent=Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);},1000);
+    }catch(e){showError('Microphone access denied: '+e.message);}
+  },
+
+  // LYRICS TRANSCRIBER (Whisper)
+  transcribeAudio: async function(){
+    var fileInput=document.getElementById('trFile');
+    if(!fileInput||!fileInput.files||!fileInput.files[0]){showError('Upload an audio file first.');return;}
+    var file=fileInput.files[0];
+    if(file.size>25*1024*1024){showError('File too large. Max 25MB for transcription.');return;}
+    var langMap={'Auto Detect':'auto','English':'en','Spanish':'es','French':'fr','German':'de','Portuguese':'pt','Japanese':'ja','Korean':'ko','Chinese':'zh'};
+    var langSel=document.getElementById('trLang');
+    var lang=langSel?langMap[langSel.value]||'auto':'auto';
+    if(file.size>24*1024*1024){showError('File too large ('+Math.round(file.size/1024/1024)+'MB). Max 24MB.');return;}
+    showLoading('Preparing audio...');
+    try{
+      var uploadBlob=file;
+      var uploadName=file.name;
+      // Vercel Hobby plan rejects request bodies over ~4.5MB - most full songs
+      // exceed that, so shrink anything close to the limit before sending.
+      if(file.size>3.5*1024*1024){
+        showLoading('Compressing audio for upload...');
+        uploadBlob=await compressAudioForTranscription(file);
+        uploadName='audio.mp3';
+      }
+      showLoading('Transcribing and formatting lyrics... This may take up to a minute.');
+      var fd=new FormData();
+      fd.append('audio',uploadBlob,uploadName);
+      if(lang&&lang!=='auto')fd.append('language',lang);
+      var res=await fetch('https://8bfr-api.vercel.app/api/transcribe',{
+        method:'POST',
+        body:fd
+      });
+      if(!res.ok){var errTxt=await res.text();showError('Server error '+res.status+': '+errTxt.substring(0,150));return;}
+      var data=await res.json();
+      if(data.error){showError('Transcription error: '+data.error);return;}
+      var lyricsOut=data.formatted||data.text;
+      if(!lyricsOut){showError('No lyrics detected in audio.');return;}
+      var html='<div style="font-weight:700;color:#4ade80;margin-bottom:.5rem;">Lyrics Transcribed!</div>';
+      if(data.language)html+='<div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;">Language: '+data.language+(data.duration?' | Duration: '+Math.round(data.duration)+'s':'')+'</div>';
+      html+='<pre style="white-space:pre-wrap;background:rgba(0,0,0,.3);padding:.75rem;border-radius:8px;font-size:.85rem;line-height:1.6;max-height:400px;overflow-y:auto;">'+esc(lyricsOut)+'</pre>';
+      html+='<div class="result-actions" style="margin-top:.5rem;"><button class="btn btn-sm" onclick="navigator.clipboard.writeText(document.querySelector(\'#mResult pre\').textContent);this.textContent=\'Copied!\';">Copy Lyrics</button>';
+      html+='</div>';
+      showResult(html);
+    }catch(e){
+      if(e.name==='TypeError'&&e.message.includes('fetch')){
+        showError('Connection failed. Check your internet and make sure the Vercel API is deployed. Error: '+e.message);
+      } else {
+        showError('Error: '+e.message);
+      }
+    }
+  }
+};
+
+// ─── UTILITIES ────────────────────────────────────
+function bestVideoMime(){
+  if(MediaRecorder.isTypeSupported('video/mp4'))return{mime:'video/mp4',ext:'mp4'};
+  if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9'))return{mime:'video/webm;codecs=vp9',ext:'webm'};
+  if(MediaRecorder.isTypeSupported('video/webm'))return{mime:'video/webm',ext:'webm'};
+  return{mime:'',ext:'webm'};
+}
+
+// FFmpeg.wasm v0.11.6 - works on GitHub Pages without special headers
+var _ffmpegLoaded=false,_ffmpeg=null;
+async function loadFFmpeg(){
+  if(_ffmpegLoaded)return _ffmpeg;
+  var script=document.createElement('script');
+  script.src='https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+  document.head.appendChild(script);
+  await new Promise(function(r,rej){script.onload=r;script.onerror=rej;});
+  var cf=FFmpeg.createFFmpeg({log:false,corePath:'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'});
+  await cf.load();
+  _ffmpeg=cf;_ffmpegLoaded=true;return _ffmpeg;
+}
+// Shrinks an audio file to a mono/low-bitrate mp3 so it clears Vercel's 4.5MB
+// request body limit on the Hobby plan. Uses lamejs (pure JS, no WASM threads)
+// instead of ffmpeg.wasm, since GitHub Pages can't serve the COOP/COEP headers
+// ffmpeg.wasm needs for SharedArrayBuffer.
+var _lamejsLoaded=false;
+async function loadLameJs(){
+  if(_lamejsLoaded)return;
+  var script=document.createElement('script');
+  script.src='https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js';
+  document.head.appendChild(script);
+  await new Promise(function(r,rej){script.onload=r;script.onerror=rej;});
+  _lamejsLoaded=true;
+}
+async function compressAudioForTranscription(file){
+  await loadLameJs();
+  var arrayBuf=await file.arrayBuffer();
+  var AudioCtx=window.AudioContext||window.webkitAudioContext;
+  var ctx=new AudioCtx();
+  var decoded=await ctx.decodeAudioData(arrayBuf.slice(0));
+  var targetRate=16000;
+  var offline=new OfflineAudioContext(1,Math.ceil(decoded.duration*targetRate),targetRate);
+  var src=offline.createBufferSource();
+  src.buffer=decoded;
+  src.connect(offline.destination);
+  src.start();
+  var rendered=await offline.startRendering();
+  var samples=rendered.getChannelData(0);
+  var pcm=new Int16Array(samples.length);
+  for(var i=0;i<samples.length;i++){
+    var s=Math.max(-1,Math.min(1,samples[i]));
+    pcm[i]=s<0?s*0x8000:s*0x7FFF;
+  }
+  var encoder=new lamejs.Mp3Encoder(1,targetRate,64);
+  var blockSize=1152;
+  var chunks=[];
+  for(var j=0;j<pcm.length;j+=blockSize){
+    var chunk=pcm.subarray(j,j+blockSize);
+    var enc=encoder.encodeBuffer(chunk);
+    if(enc.length>0)chunks.push(enc);
+  }
+  var end=encoder.flush();
+  if(end.length>0)chunks.push(end);
+  try{ctx.close();}catch(e){}
+  return new Blob(chunks,{type:'audio/mpeg'});
+}
+async function convertToMp4(webmBlob,filename){
+  try{
+    var ff=await loadFFmpeg();
+    var inData=await FFmpeg.fetchFile(webmBlob);
+    ff.FS('writeFile','input.webm',inData);
+    await ff.run('-i','input.webm','-c:v','libx264','-preset','fast','-crf','23','-c:a','aac','-b:a','192k','-movflags','+faststart','-pix_fmt','yuv420p','output.mp4');
+    var data=ff.FS('readFile','output.mp4');
+    var mp4Blob=new Blob([data.buffer],{type:'video/mp4'});
+    var url=URL.createObjectURL(mp4Blob);
+    var a=document.createElement('a');a.href=url;a.download=filename||'video-8bfr.mp4';document.body.appendChild(a);a.click();document.body.removeChild(a);
+    try{ff.FS('unlink','input.webm');ff.FS('unlink','output.mp4');}catch(e){}
+    return url;
+  }catch(e){console.error('MP4 convert error:',e);alert('MP4 conversion failed: '+e.message+'\nTry cloudconvert.com as a free alternative.');return null;}
+}
+// Adds a convert button to any result area
+function addMp4ConvertBtn(containerId,blobRef,filename){
+  var el=document.getElementById(containerId);
+  if(!el)el=document.querySelector('.result-actions');
+  if(!el)return;
+  var btn=document.createElement('button');btn.className='btn btn-sm';btn.textContent='Convert to MP4';
+  btn.onclick=async function(){
+    btn.textContent='Loading FFmpeg...';btn.disabled=true;
+    try{
+      await loadFFmpeg();btn.textContent='Converting...';
+      var blob=window[blobRef]||window._lastBlob;
+      var url=await convertToMp4(blob,filename);
+      if(url)btn.textContent='MP4 Downloaded!';
+      else btn.textContent='Convert failed';
+    }catch(e){btn.textContent='Error: '+e.message;}
+  };
+  el.appendChild(btn);
+}
+function audioBufferToWav(buffer){
+  var numChannels=buffer.numberOfChannels,sampleRate=buffer.sampleRate,format=1,bitDepth=16;
+  var length=buffer.length*numChannels*(bitDepth/8);
+  var out=new ArrayBuffer(44+length),view=new DataView(out);
+  function writeString(offset,str){for(var i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));}
+  writeString(0,'RIFF');view.setUint32(4,36+length,true);writeString(8,'WAVE');
+  writeString(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,format,true);
+  view.setUint16(22,numChannels,true);view.setUint32(24,sampleRate,true);
+  view.setUint32(28,sampleRate*numChannels*(bitDepth/8),true);
+  view.setUint16(32,numChannels*(bitDepth/8),true);view.setUint16(34,bitDepth,true);
+  writeString(36,'data');view.setUint32(40,length,true);
+  var offset=44,channels=[];
+  for(var i=0;i<numChannels;i++)channels.push(buffer.getChannelData(i));
+  for(var i=0;i<buffer.length;i++){
+    for(var ch=0;ch<numChannels;ch++){
+      var sample=Math.max(-1,Math.min(1,channels[ch][i]));
+      view.setInt16(offset,sample<0?sample*0x8000:sample*0x7FFF,true);
+      offset+=2;
+    }
+  }
+  return new Blob([out],{type:'audio/wav'});
+}
+
+async function audioBufferToWebm(buffer){
+  var ac=new (window.AudioContext||window.webkitAudioContext)();
+  var src=ac.createBufferSource();src.buffer=buffer;
+  var dest=ac.createMediaStreamDestination();
+  src.connect(dest);
+  var chunks=[];
+  var recorder=new MediaRecorder(dest.stream,{mimeType:'audio/webm'});
+  recorder.ondataavailable=function(e){if(e.data.size>0)chunks.push(e.data);};
+  return new Promise(function(resolve){
+    recorder.onstop=function(){resolve(new Blob(chunks,{type:'audio/webm'}));};
+    recorder.start();src.start();
+    setTimeout(function(){recorder.stop();src.stop();},buffer.duration*1000+100);
+  });
+}
+
+// ─── DOWNLOAD HELPERS ────────────────────────────
+window.downloadImage=function(filename){
+  if(!window._lastImageUrl)return;
+  var a=document.createElement('a');
+  a.href=window._lastImageUrl;
+  a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+window.downloadBlob=function(filename){
+  if(!window._lastBlobUrl)return;
+  var a=document.createElement('a');
+  a.href=window._lastBlobUrl;
+  a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+
+// ─── INIT ────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input',renderTools);
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&document.getElementById('modalOverlay').classList.contains('show'))closeModal();
+});
+
+renderNav();
+renderTools();
+
+var isOwnerOrCoOwner=false;
+async function checkOwnerAccess(){
+  try{
+    var db=window._8bfrDb;
+    if(!db)return;
+    var ures=await db.auth.getUser();
+    var user=ures&&ures.data&&ures.data.user;
+    if(!user){
+      var sres=await db.auth.getSession();
+      user=sres&&sres.data&&sres.data.session&&sres.data.session.user;
+    }
+    if(!user)return;
+    if(user.id==='cb556180-f032-4b21-9470-1d786f2664ab'){isOwnerOrCoOwner=true;renderTools();return;}
+    var prof=await db.from('profiles').select('role,subscription_tier').eq('user_id',user.id).maybeSingle();
+    var role=prof&&prof.data&&prof.data.role;
+    window._userTier=(prof&&prof.data&&prof.data.subscription_tier)||'free';
+    if(role==='owner'||role==='co-owner'){isOwnerOrCoOwner=true;renderTools();}
+  }catch(e){console.error('owner access check:',e);}
+}
+var _ownA=0;function _ownTry(){_ownA++;if(window._8bfrDb){checkOwnerAccess();}else if(_ownA<12){setTimeout(_ownTry,300);}}
+setTimeout(_ownTry,400);
+</script>
+
+<script>
+// ---- localStorage persistence for tool fields ----
+var STUDIO_KEY='aistudio_fields';
+function getStudioData(){try{return JSON.parse(localStorage.getItem(STUDIO_KEY)||'{}');}catch(e){return{};}}
+function setStudioData(d){try{localStorage.setItem(STUDIO_KEY,JSON.stringify(d));}catch(e){}}
+
+function restoreToolFields(tool){
+  var data=getStudioData();
+  var prefix=tool.id+'__';
+  tool.fields.forEach(function(f){
+    var id=f.id||f.name;
+    var key=prefix+id;
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(data[key]!==undefined){
+      if(el.tagName==='SELECT'||el.tagName==='TEXTAREA'||el.type==='text'||el.type==='number'||el.type==='color'){
+        el.value=data[key];
+      }
+    }
+  });
+}
+
+function attachFieldSavers(tool){
+  var prefix=tool.id+'__';
+  tool.fields.forEach(function(f){
+    var id=f.id||f.name;
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(el.tagName==='SELECT'||el.tagName==='TEXTAREA'||el.type==='text'||el.type==='number'||el.type==='color'){
+      var save=function(){
+        var data=getStudioData();
+        data[prefix+id]=el.value;
+        setStudioData(data);
+      };
+      el.addEventListener('input',save);
+      el.addEventListener('change',save);
+    }
+  });
+}
+
+// Save/restore search input
+document.addEventListener('DOMContentLoaded',function(){
+  var search=document.getElementById('searchInput');
+  if(search){
+    var savedSearch=localStorage.getItem('aistudio_search')||'';
+    if(savedSearch){search.value=savedSearch;search.dispatchEvent(new Event('input'));}
+    search.addEventListener('input',function(){
+      try{localStorage.setItem('aistudio_search',this.value);}catch(e){}
+    });
+  }
+});
+
+</script>
+<script src="scripts.js"></script>
+</body>
+</html>
